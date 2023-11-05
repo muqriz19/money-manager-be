@@ -39,11 +39,26 @@ namespace moneyManagerBE.Services.Accounts
             }
         }
 
+        public DbResponse<Account> UpdateAccount(Account account)
+        {
+            _appdbContext.Accounts.Update(account);
+            _appdbContext.SaveChanges();
+
+            return new DbResponse<Account>
+            {
+                IsSuccess = true,
+                Message = "Update account successful",
+                Data = account
+            };
+        }
+
         public DbResponseList<List<Account>> GetAllAccounts(int pageNumber, int pageSize, string search)
         {
             string searchTerm = search.ToLower();
 
             List<Account> allAccounts;
+            // if search use searched total, if not then db all count
+            int totalCount = 0;
 
             if (!string.IsNullOrEmpty(searchTerm))
             {
@@ -55,6 +70,8 @@ namespace moneyManagerBE.Services.Accounts
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
+
+                totalCount = allAccounts.Count();
             }
             else
             {
@@ -62,6 +79,8 @@ namespace moneyManagerBE.Services.Accounts
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
+
+                totalCount = _appdbContext.Accounts.Count();
             }
 
 
@@ -69,11 +88,36 @@ namespace moneyManagerBE.Services.Accounts
             {
                 Data = allAccounts,
                 IsSuccess = true,
-                Total = _appdbContext.Accounts.Count(),
+                Total = totalCount,
                 Message = "Success getting accounts"
             };
 
             return dbResponseList;
+        }
+
+        public DbResponse<List<string>> DeleteAccount(int id)
+        {
+            var account = _appdbContext.Accounts.FirstOrDefault(account => account.Id == id);
+
+            if (account != null)
+            {
+                _appdbContext.Accounts.Remove(account);
+                _appdbContext.SaveChanges();
+
+                return new DbResponse<List<string>>()
+                {
+                    IsSuccess = true,
+                    Message = "Deleted account of " + id
+                };
+            }
+            else
+            {
+                return new DbResponse<List<string>>()
+                {
+                    IsSuccess = false,
+                    Message = $"Account of {id} does not exist"
+                };
+            }
         }
     }
 }

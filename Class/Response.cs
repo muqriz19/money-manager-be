@@ -7,7 +7,7 @@ namespace moneyManagerBE.Class
         public string Message { get; set; } = string.Empty;
     }
 
-    public class ResponseList<T>: Response<T>
+    public class ResponseList<T> : Response<T>
     {
         public int Total { get; set; }
     }
