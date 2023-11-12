@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using moneyManagerBE.Data;
 using moneyManagerBE.Services.Accounts;
+using moneyManagerBE.Services.Categories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,7 @@ builder.Services.AddCors(options =>
 
 // register my Service/IServices
 builder.Services.AddScoped<IAccountsService, AccountsService>();
+builder.Services.AddScoped<ICategoriesServices, CategoriesService>();
 
 // register db context
 // connect to services

@@ -65,7 +65,7 @@ namespace moneyManagerBE.Services.Accounts
                 allAccounts = _appdbContext.Accounts
                 .Where(account =>
                 account.Name.ToLower().Contains(searchTerm) ||
-                account.Description.ToLower().Contains(searchTerm)
+                (account.Description != null && account.Description.ToLower().Contains(searchTerm))
                 )
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)

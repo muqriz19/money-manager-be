@@ -66,7 +66,6 @@ namespace moneyManagerBE.Controllers
                     {
                         Status = StatusCodes.Status409Conflict,
                         Message = dbResponse.Message,
-                        Data = new string[] { }
                     };
 
                     return Conflict(response);
@@ -78,7 +77,6 @@ namespace moneyManagerBE.Controllers
                 {
                     Status = StatusCodes.Status400BadRequest,
                     Message = ModelState.Values.SelectMany(v => v.Errors).ToString()!,
-                    Data = new string[] { }
                 };
 
                 return BadRequest(response);
