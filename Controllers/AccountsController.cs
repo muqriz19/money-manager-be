@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using moneyManagerBE.Class;
 using moneyManagerBE.Models;
@@ -15,6 +16,7 @@ namespace moneyManagerBE.Controllers
             _accountsService = accountsService;
         }
 
+        [Authorize]
         [HttpGet]
         public IActionResult GetAllAccounts([FromQuery] PaginationFilter filter)
         {
@@ -42,6 +44,7 @@ namespace moneyManagerBE.Controllers
             return Ok(response);
         }
 
+        [Authorize]
         [HttpPost]
         public IActionResult CreateAccount([FromBody] Account account)
         {
@@ -83,6 +86,7 @@ namespace moneyManagerBE.Controllers
             }
         }
 
+        [Authorize]
         [HttpPut]
         public IActionResult UpdateAccount([FromBody] Account account)
         {
@@ -125,6 +129,7 @@ namespace moneyManagerBE.Controllers
             }
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public IActionResult DeleteAccount(int id)
         {

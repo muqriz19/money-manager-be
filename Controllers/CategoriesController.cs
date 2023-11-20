@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using moneyManagerBE.Class;
 using moneyManagerBE.Models;
@@ -15,6 +16,7 @@ namespace moneyManagerBE.Controllers
             _categoriesServices = categoriesServices;
         }
 
+        [Authorize]
         [HttpPost]
         public IActionResult CreateCategory([FromBody] Category category)
         {
@@ -43,6 +45,7 @@ namespace moneyManagerBE.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet]
         public IActionResult GetAllCategories([FromQuery] PaginationFilter filter)
         {
@@ -70,6 +73,7 @@ namespace moneyManagerBE.Controllers
             return Ok(response);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public IActionResult DeleteAccount(int id)
         {
@@ -100,6 +104,7 @@ namespace moneyManagerBE.Controllers
 
         }
 
+        [Authorize]
         [HttpPut]
         public IActionResult UpdateCategory([FromBody] Category category)
         {

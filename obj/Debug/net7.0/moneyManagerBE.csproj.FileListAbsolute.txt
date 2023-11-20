@@ -41,3 +41,14 @@
 /home/m/Projects/Workspace/moneyManagerBE/bin/Debug/net7.0/Npgsql.dll
 /home/m/Projects/Workspace/moneyManagerBE/bin/Debug/net7.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll
 /home/m/Projects/Workspace/moneyManagerBE/bin/Debug/net7.0/System.CodeDom.dll
+/home/m/Projects/Workspace/moneyManagerBE/bin/Debug/net7.0/BCrypt.Net-Next.dll
+/home/m/Projects/Workspace/moneyManagerBE/bin/Debug/net7.0/AutoMapper.dll
+/home/m/Projects/Workspace/moneyManagerBE/bin/Debug/net7.0/AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+/home/m/Projects/Workspace/moneyManagerBE/bin/Debug/net7.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
+/home/m/Projects/Workspace/moneyManagerBE/bin/Debug/net7.0/Microsoft.IdentityModel.JsonWebTokens.dll
+/home/m/Projects/Workspace/moneyManagerBE/bin/Debug/net7.0/Microsoft.IdentityModel.Logging.dll
+/home/m/Projects/Workspace/moneyManagerBE/bin/Debug/net7.0/Microsoft.IdentityModel.Protocols.dll
+/home/m/Projects/Workspace/moneyManagerBE/bin/Debug/net7.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+/home/m/Projects/Workspace/moneyManagerBE/bin/Debug/net7.0/Microsoft.IdentityModel.Tokens.dll
+/home/m/Projects/Workspace/moneyManagerBE/bin/Debug/net7.0/System.IdentityModel.Tokens.Jwt.dll
+/home/m/Projects/Workspace/moneyManagerBE/bin/Debug/net7.0/Microsoft.IdentityModel.Abstractions.dll
