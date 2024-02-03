@@ -10,6 +10,8 @@ namespace moneyManagerBE.Services.Accounts
 
         DbResponseList<List<Account>> GetAllAccounts(int userId, int pageNumber, int pageSize, string search);
 
+        DbResponse<Account> GetAccountById(int userId, int accountId);
+
         DbResponse<List<string>> DeleteAccount(int id);
     }
 }

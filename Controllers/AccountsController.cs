@@ -27,7 +27,6 @@ namespace moneyManagerBE.Controllers
         [HttpGet("{userId}")]
         public IActionResult GetAllAccounts(int userId, [FromQuery] PaginationFilter filter)
         {
-            Console.WriteLine(userId);
             PaginationFilter validFilter;
 
             if (filter.Search is not null)
@@ -50,6 +49,31 @@ namespace moneyManagerBE.Controllers
             };
 
             return Ok(response);
+        }
+
+        [Authorize]
+        [HttpGet("{userId}/{accountId}")]
+        public IActionResult GetAccountById(int userId, int accountId)
+        {
+            var dbResponse = _accountsServices.GetAccountById(userId, accountId);
+
+            if (dbResponse.IsSuccess)
+            {
+                return Ok(new Response<Account>
+                {
+                    Data = dbResponse.Data,
+                    Message = dbResponse.Message,
+                    Status = 200
+                });
+            }
+            else
+            {
+                return NotFound(new Response<Account>
+                {
+                    Message = dbResponse.Message,
+                    Status = 404
+                });
+            }
         }
 
         [Authorize]

@@ -70,7 +70,7 @@ namespace moneyManagerBE.Services.Categories
                 .Take(pageSize)
                 .ToList();
 
-                totalCount = _appDbContext.Accounts.Count();
+                totalCount = _appDbContext.Categories.Count();
             }
 
             DbResponseList<List<Category>> dbResponseList = new DbResponseList<List<Category>>
@@ -120,6 +120,29 @@ namespace moneyManagerBE.Services.Categories
                 Message = "Update category successful",
                 Data = category
             };
+        }
+
+        public DbResponse<Category> GetCategoryById(int userId, int categoryId)
+        {
+            var foundData = _appDbContext.Categories.Where(data => data.UserId == userId).FirstOrDefault(data => data.Id == categoryId);
+
+            if (foundData != null)
+            {
+                return new DbResponse<Category>
+                {
+                    IsSuccess = true,
+                    Message = $"Category found",
+                    Data = foundData
+                };
+            }
+            else
+            {
+                return new DbResponse<Category>
+                {
+                    IsSuccess = false,
+                    Message = $"Category of {categoryId} does not exist"
+                };
+            }
         }
     }
 }

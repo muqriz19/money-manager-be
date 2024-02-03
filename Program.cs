@@ -7,6 +7,7 @@ using moneyManagerBE.Data;
 using moneyManagerBE.Services.Accounts;
 using moneyManagerBE.Services.Authorization;
 using moneyManagerBE.Services.Categories;
+using moneyManagerBE.Services.Records;
 using moneyManagerBE.Services.Users;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -63,6 +64,7 @@ builder.Services.AddScoped<IAccountsService, AccountsService>();
 builder.Services.AddScoped<ICategoriesServices, CategoriesService>();
 builder.Services.AddScoped<IAuthorization, AuthorizationService>();
 builder.Services.AddScoped<IUsersService, UsersService>();
+builder.Services.AddScoped<IRecordsService, RecordsService>();
 
 
 // add auto mapper

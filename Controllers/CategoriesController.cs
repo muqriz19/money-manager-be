@@ -121,7 +121,6 @@ namespace moneyManagerBE.Controllers
 
                 return BadRequest(response);
             }
-
         }
 
         [Authorize]
@@ -163,6 +162,31 @@ namespace moneyManagerBE.Controllers
                 };
 
                 return Ok(response);
+            }
+        }
+
+        [Authorize]
+        [HttpGet("{userId}/{categoryId}")]
+        public IActionResult GetCategoryById(int userId, int categoryId)
+        {
+            var dbResponse = _categoriesServices.GetCategoryById(userId, categoryId);
+
+            if (dbResponse.IsSuccess)
+            {
+                return Ok(new Response<Category>
+                {
+                    Data = dbResponse.Data,
+                    Message = dbResponse.Message,
+                    Status = 200
+                });
+            }
+            else
+            {
+                return NotFound(new Response<Category>
+                {
+                    Message = dbResponse.Message,
+                    Status = 404
+                });
             }
         }
     }

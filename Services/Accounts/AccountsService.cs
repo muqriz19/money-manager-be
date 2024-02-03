@@ -123,5 +123,28 @@ namespace moneyManagerBE.Services.Accounts
                 };
             }
         }
+
+        public DbResponse<Account> GetAccountById(int userId, int accountId)
+        {
+            var foundData = _appdbContext.Accounts.Where(data => data.UserId == userId).FirstOrDefault(data => data.Id == accountId);
+
+            if (foundData != null)
+            {
+                return new DbResponse<Account>
+                {
+                    IsSuccess = true,
+                    Message = $"Account found",
+                    Data = foundData
+                };
+            }
+            else
+            {
+                return new DbResponse<Account>
+                {
+                    IsSuccess = false,
+                    Message = $"Account of {accountId} does not exist"
+                };
+            }
+        }
     }
 }
