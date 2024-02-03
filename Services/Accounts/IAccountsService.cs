@@ -8,7 +8,7 @@ namespace moneyManagerBE.Services.Accounts
         DbResponse<Account> AddAccount(Account account);
         DbResponse<Account> UpdateAccount(Account account);
 
-        DbResponseList<List<Account>> GetAllAccounts(int pageNumber, int pageSize, string search);
+        DbResponseList<List<Account>> GetAllAccounts(int userId, int pageNumber, int pageSize, string search);
 
         DbResponse<List<string>> DeleteAccount(int id);
     }

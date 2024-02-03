@@ -56,9 +56,9 @@ namespace moneyManagerBE.Services.Authorization
             }
         }
 
-        public DbResponse<LoginData> Login(string username, string password)
+        public DbResponse<LoginData> Login(string email, string password)
         {
-            var foundUser = _appDbContext.Users.Where(user => user.Name == username).FirstOrDefault();
+            var foundUser = _appDbContext.Users.Where(user => user.Email == email).FirstOrDefault();
 
             if (foundUser != null)
             {
@@ -72,7 +72,8 @@ namespace moneyManagerBE.Services.Authorization
                         {
                             Name = foundUser.Name,
                             Email = foundUser.Email,
-                            CreatedDate = foundUser.CreatedDate
+                            CreatedDate = foundUser.CreatedDate,
+                            UserId = foundUser.Id
                         }
                     };
                 }

@@ -7,6 +7,7 @@ using moneyManagerBE.Data;
 using moneyManagerBE.Services.Accounts;
 using moneyManagerBE.Services.Authorization;
 using moneyManagerBE.Services.Categories;
+using moneyManagerBE.Services.Users;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,6 +62,9 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<IAccountsService, AccountsService>();
 builder.Services.AddScoped<ICategoriesServices, CategoriesService>();
 builder.Services.AddScoped<IAuthorization, AuthorizationService>();
+builder.Services.AddScoped<IUsersService, UsersService>();
+
+
 // add auto mapper
 // but how does it get the AutoMapperProfile.cs to run and map
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
@@ -68,10 +72,6 @@ builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 string jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>();
 string jwtKey = builder.Configuration.GetSection("Jwt:Key").Get<string>();
-
-Console.WriteLine(jwtIssuer);
-Console.WriteLine(jwtKey);
-
 
 // add jwt token authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

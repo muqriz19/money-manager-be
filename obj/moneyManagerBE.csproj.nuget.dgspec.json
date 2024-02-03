@@ -1,30 +1,30 @@
 {
   "format": 1,
   "restore": {
-    "/home/m/Projects/Workspace/moneyManagerBE/moneyManagerBE.csproj": {}
+    "/home/m/Projects/Workspace/Code/Money Manager/moneyManagerBE/moneyManagerBE.csproj": {}
   },
   "projects": {
-    "/home/m/Projects/Workspace/moneyManagerBE/moneyManagerBE.csproj": {
+    "/home/m/Projects/Workspace/Code/Money Manager/moneyManagerBE/moneyManagerBE.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/m/Projects/Workspace/moneyManagerBE/moneyManagerBE.csproj",
+        "projectUniqueName": "/home/m/Projects/Workspace/Code/Money Manager/moneyManagerBE/moneyManagerBE.csproj",
         "projectName": "moneyManagerBE",
-        "projectPath": "/home/m/Projects/Workspace/moneyManagerBE/moneyManagerBE.csproj",
+        "projectPath": "/home/m/Projects/Workspace/Code/Money Manager/moneyManagerBE/moneyManagerBE.csproj",
         "packagesPath": "/home/m/.nuget/packages/",
-        "outputPath": "/home/m/Projects/Workspace/moneyManagerBE/obj/",
+        "outputPath": "/home/m/Projects/Workspace/Code/Money Manager/moneyManagerBE/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/m/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
-          "net7.0"
+          "net8.0"
         ],
         "sources": {
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net7.0": {
-            "targetAlias": "net7.0",
+          "net8.0": {
+            "targetAlias": "net8.0",
             "projectReferences": {}
           }
         },
@@ -35,8 +35,8 @@
         }
       },
       "frameworks": {
-        "net7.0": {
-          "targetAlias": "net7.0",
+        "net8.0": {
+          "targetAlias": "net8.0",
           "dependencies": {
             "AutoMapper.Extensions.Microsoft.DependencyInjection": {
               "target": "Package",
@@ -48,25 +48,23 @@
             },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
-              "version": "[7.0.14, )"
+              "version": "[8.0.0, )"
             },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
-              "version": "[7.0.12, )"
+              "version": "[8.0.0, )"
             },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
-              "version": "[7.0.12, )"
+              "version": "[8.0.0, )"
             },
             "Microsoft.EntityFrameworkCore.Design": {
-              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
-              "suppressParent": "All",
               "target": "Package",
-              "version": "[7.0.12, )"
+              "version": "[8.0.0, )"
             },
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
-              "version": "[7.0.11, )"
+              "version": "[8.0.0, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
@@ -96,7 +94,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/7.0.114/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.100/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

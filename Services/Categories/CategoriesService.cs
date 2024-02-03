@@ -14,7 +14,9 @@ namespace moneyManagerBE.Services.Categories
 
         public DbResponse<Category> AddCategory(Category category)
         {
-            var foundCategoryWithSameName = _appDbContext.Categories.Where(theCategory => theCategory.Name == category.Name).FirstOrDefault();
+            var foundCategoryWithSameName = _appDbContext.Categories
+            .Where(theCategory => theCategory.UserId == category.UserId)
+            .Where(theCategory => theCategory.Name == category.Name).FirstOrDefault();
 
             if (foundCategoryWithSameName != null)
             {
@@ -38,7 +40,7 @@ namespace moneyManagerBE.Services.Categories
             }
         }
 
-        public DbResponseList<List<Category>> GetAllCategories(int pageNumber, int pageSize, string search)
+        public DbResponseList<List<Category>> GetAllCategories(int userId, int pageNumber, int pageSize, string search)
         {
             string searchTerm = search.ToLower();
 
@@ -49,9 +51,10 @@ namespace moneyManagerBE.Services.Categories
             if (!string.IsNullOrEmpty(searchTerm))
             {
                 allcategories = _appDbContext.Categories
-                .Where(account =>
-                account.Name.ToLower().Contains(searchTerm) ||
-                (account.Description != null && account.Description.ToLower().Contains(searchTerm))
+                .Where(theCategory => theCategory.UserId == userId)
+                .Where(theCategory =>
+                theCategory.Name.ToLower().Contains(searchTerm) ||
+                (theCategory.Description != null && theCategory.Description.ToLower().Contains(searchTerm))
                 )
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
@@ -62,6 +65,7 @@ namespace moneyManagerBE.Services.Categories
             else
             {
                 allcategories = _appDbContext.Categories
+                .Where(theCategory => theCategory.UserId == userId)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();

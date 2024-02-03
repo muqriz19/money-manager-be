@@ -8,6 +8,8 @@ namespace moneyManagerBE.Models
         public string IconName { get; set; } = string.Empty;
         public string IconSet { get; set; } = string.Empty;
         public DateTimeOffset CreatedDate { get; set; } = new DateTimeOffset();
+
+        public int UserId { get; set; }
     }
 
     public class Icon

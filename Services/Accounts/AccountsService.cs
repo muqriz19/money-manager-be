@@ -14,7 +14,9 @@ namespace moneyManagerBE.Services.Accounts
 
         public DbResponse<Account> AddAccount(Account account)
         {
-            var foundAccountWithSameName = _appdbContext.Accounts.Where(theAccount => theAccount.Name == account.Name).FirstOrDefault();
+            var foundAccountWithSameName = _appdbContext.Accounts
+            .Where(theAccount => theAccount.UserId == account.UserId)
+            .Where(theAccount => theAccount.Name == account.Name).FirstOrDefault();
 
             if (foundAccountWithSameName != null)
             {
@@ -52,7 +54,7 @@ namespace moneyManagerBE.Services.Accounts
             };
         }
 
-        public DbResponseList<List<Account>> GetAllAccounts(int pageNumber, int pageSize, string search)
+        public DbResponseList<List<Account>> GetAllAccounts(int userId, int pageNumber, int pageSize, string search)
         {
             string searchTerm = search.ToLower();
 
@@ -63,6 +65,7 @@ namespace moneyManagerBE.Services.Accounts
             if (!string.IsNullOrEmpty(searchTerm))
             {
                 allAccounts = _appdbContext.Accounts
+                .Where(theAccount => theAccount.UserId == userId)
                 .Where(account =>
                 account.Name.ToLower().Contains(searchTerm) ||
                 (account.Description != null && account.Description.ToLower().Contains(searchTerm))
@@ -76,6 +79,7 @@ namespace moneyManagerBE.Services.Accounts
             else
             {
                 allAccounts = _appdbContext.Accounts
+                .Where(theAccount => theAccount.UserId == userId)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();

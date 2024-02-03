@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using moneyManagerBE.Class;
 using moneyManagerBE.Models;
 using moneyManagerBE.Services.Accounts;
+using moneyManagerBE.Services.Users;
 
 namespace moneyManagerBE.Controllers
 {
@@ -10,16 +11,23 @@ namespace moneyManagerBE.Controllers
     [Route("api/[controller]")]
     public class AccountsController : ControllerBase
     {
-        private readonly IAccountsService _accountsService;
-        public AccountsController(IAccountsService accountsService)
+        private readonly IAccountsService _accountsServices;
+        private readonly IUsersService _usersServices;
+
+        public AccountsController(
+            IAccountsService accountsServices,
+            IUsersService usersServices
+            )
         {
-            _accountsService = accountsService;
+            _accountsServices = accountsServices;
+            _usersServices = usersServices;
         }
 
         [Authorize]
-        [HttpGet]
-        public IActionResult GetAllAccounts([FromQuery] PaginationFilter filter)
+        [HttpGet("{userId}")]
+        public IActionResult GetAllAccounts(int userId, [FromQuery] PaginationFilter filter)
         {
+            Console.WriteLine(userId);
             PaginationFilter validFilter;
 
             if (filter.Search is not null)
@@ -31,7 +39,7 @@ namespace moneyManagerBE.Controllers
                 validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
             }
 
-            var dbResponseList = _accountsService.GetAllAccounts(validFilter.PageNumber, validFilter.PageSize, validFilter?.Search);
+            var dbResponseList = _accountsServices.GetAllAccounts(userId, validFilter.PageNumber, validFilter.PageSize, validFilter?.Search);
 
             var response = new ResponseList<List<Account>>
             {
@@ -48,9 +56,22 @@ namespace moneyManagerBE.Controllers
         [HttpPost]
         public IActionResult CreateAccount([FromBody] Account account)
         {
+            var userExistDbResponse = _usersServices.CheckUser(account.UserId);
+
+            if (userExistDbResponse.IsSuccess == false)
+            {
+                var response = new Response<Account>
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Message = userExistDbResponse.Message
+                };
+
+                return BadRequest(response);
+            }
+
             if (ModelState.IsValid)
             {
-                DbResponse<Account> dbResponse = _accountsService.AddAccount(account);
+                DbResponse<Account> dbResponse = _accountsServices.AddAccount(account);
 
                 if (dbResponse.IsSuccess)
                 {
@@ -90,6 +111,19 @@ namespace moneyManagerBE.Controllers
         [HttpPut]
         public IActionResult UpdateAccount([FromBody] Account account)
         {
+            var userExistDbResponse = _usersServices.CheckUser(account.UserId);
+
+            if (userExistDbResponse.IsSuccess == false)
+            {
+                var response = new Response<Account>
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Message = userExistDbResponse.Message
+                };
+
+                return BadRequest(response);
+            }
+
             if (ModelState.IsValid)
             {
                 if (account.Id == 0)
@@ -104,7 +138,7 @@ namespace moneyManagerBE.Controllers
                 }
                 else
                 {
-                    DbResponse<Account> dbResponse = _accountsService.UpdateAccount(account);
+                    DbResponse<Account> dbResponse = _accountsServices.UpdateAccount(account);
 
                     var response = new Response<Account>
                     {
@@ -133,7 +167,7 @@ namespace moneyManagerBE.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteAccount(int id)
         {
-            DbResponse<List<string>> dbResponse = _accountsService.DeleteAccount(id);
+            DbResponse<List<string>> dbResponse = _accountsServices.DeleteAccount(id);
 
             if (dbResponse.IsSuccess)
             {

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using moneyManagerBE.Class;
 using moneyManagerBE.Models;
 using moneyManagerBE.Services.Categories;
+using moneyManagerBE.Services.Users;
 
 namespace moneyManagerBE.Controllers
 {
@@ -11,15 +12,34 @@ namespace moneyManagerBE.Controllers
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoriesServices _categoriesServices;
-        public CategoriesController(ICategoriesServices categoriesServices)
+        private readonly IUsersService _usersServices;
+
+        public CategoriesController(
+            ICategoriesServices categoriesServices,
+            IUsersService usersServices
+            )
         {
             _categoriesServices = categoriesServices;
+            _usersServices = usersServices;
         }
 
         [Authorize]
         [HttpPost]
         public IActionResult CreateCategory([FromBody] Category category)
         {
+            var userExistDbResponse = _usersServices.CheckUser(category.UserId);
+
+            if (userExistDbResponse.IsSuccess == false)
+            {
+                var response = new Response<Account>
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Message = userExistDbResponse.Message
+                };
+
+                return BadRequest(response);
+            }
+
             DbResponse<Category> dbResponse = _categoriesServices.AddCategory(category);
 
             if (dbResponse.IsSuccess)
@@ -46,8 +66,8 @@ namespace moneyManagerBE.Controllers
         }
 
         [Authorize]
-        [HttpGet]
-        public IActionResult GetAllCategories([FromQuery] PaginationFilter filter)
+        [HttpGet("{userId}")]
+        public IActionResult GetAllCategories(int userId, [FromQuery] PaginationFilter filter)
         {
             PaginationFilter validFilter;
 
@@ -60,7 +80,7 @@ namespace moneyManagerBE.Controllers
                 validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
             }
 
-            DbResponseList<List<Category>> dbResponseList = _categoriesServices.GetAllCategories(validFilter.PageNumber, validFilter.PageSize, validFilter?.Search);
+            DbResponseList<List<Category>> dbResponseList = _categoriesServices.GetAllCategories(userId, validFilter.PageNumber, validFilter.PageSize, validFilter?.Search);
 
             var response = new ResponseList<List<Category>>
             {
@@ -108,6 +128,18 @@ namespace moneyManagerBE.Controllers
         [HttpPut]
         public IActionResult UpdateCategory([FromBody] Category category)
         {
+            var userExistDbResponse = _usersServices.CheckUser(category.UserId);
+
+            if (userExistDbResponse.IsSuccess == false)
+            {
+                var response = new Response<Account>
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Message = userExistDbResponse.Message
+                };
+
+                return BadRequest(response);
+            }
 
             if (category.Id == 0)
             {

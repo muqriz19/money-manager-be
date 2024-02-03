@@ -7,7 +7,8 @@ namespace moneyManagerBE.Services.Authorization
     public interface IAuthorization
     {
         DbResponse<UserDto> AddUser(User user);
-        DbResponse<LoginData> Login(string username, string password);
+        DbResponse<LoginData> Login(string email, string password);
+
 
         bool CheckEmail(string emailAddress);
 

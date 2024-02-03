@@ -50,7 +50,7 @@ namespace moneyManagerBE.Controllers
         [HttpPost]
         public IActionResult Login([FromBody] Login login)
         {
-            DbResponse<LoginData> dbResponse = _authorizationService.Login(login.Name, login.Password);
+            DbResponse<LoginData> dbResponse = _authorizationService.Login(login.Email, login.Password);
 
             if (dbResponse.IsSuccess)
             {
