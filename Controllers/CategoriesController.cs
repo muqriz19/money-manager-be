@@ -116,7 +116,7 @@ namespace moneyManagerBE.Controllers
                 {
                     Status = StatusCodes.Status400BadRequest,
                     Message = dbResponse.Message,
-                    Data = new string[] { }
+                    Data = []
                 };
 
                 return BadRequest(response);

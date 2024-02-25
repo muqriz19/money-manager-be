@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using moneyManagerBE.Data;
@@ -11,9 +12,11 @@ using moneyManagerBE.Data;
 namespace moneyManagerBE.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240203064538_Record Description Optional")]
+    partial class RecordDescriptionOptional
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -91,28 +94,8 @@ namespace moneyManagerBE.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CategoryId")
+                    b.Property<int?>("RecordId")
                         .HasColumnType("integer");
-
-                    b.Property<DateTimeOffset?>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("RecordId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("Value")
-                        .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
@@ -182,9 +165,7 @@ namespace moneyManagerBE.Migrations
                 {
                     b.HasOne("moneyManagerBE.Models.Record", null)
                         .WithMany("Logs")
-                        .HasForeignKey("RecordId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RecordId");
                 });
 
             modelBuilder.Entity("moneyManagerBE.Models.Record", b =>
