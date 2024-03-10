@@ -5,14 +5,14 @@ namespace moneyManagerBE.Data
 {
     public class AppDbContext : DbContext
     {
-        // all tables
+        // all tables - define them here
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<User> Users { get; set; }
 
         public DbSet<Record> Records { get; set; }
 
-
+        public DbSet<Log> Logs { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
