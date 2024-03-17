@@ -37,6 +37,8 @@ namespace moneyManagerBE.Logs
                 return BadRequest(response);
             }
 
+            
+
             return Ok();
         }
     }
