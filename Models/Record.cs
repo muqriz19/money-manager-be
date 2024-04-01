@@ -1,6 +1,3 @@
-using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
-
 namespace moneyManagerBE.Models
 {
     public class Record
@@ -10,7 +7,7 @@ namespace moneyManagerBE.Models
         public string? Description { get; set; } = string.Empty;
         public DateTimeOffset CreatedDate { get; set; } = new DateTimeOffset();
         public int AccountId { get; set; }
-        public Collection<Log> Logs { get; set; } = [];
+        public List<Log> Logs { get; set; } = [];
         public int UserId { get; set; }
     }
 }

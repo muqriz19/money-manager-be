@@ -13,5 +13,7 @@ namespace moneyManagerBE.Services.Records
         DbResponse<Record> GetRecordById(int userId, int accountId, int recordId);
 
         DbResponse<Record> UpdateRecord(Record record);
+
+        bool DoesExist(int recordId);
     }
 }

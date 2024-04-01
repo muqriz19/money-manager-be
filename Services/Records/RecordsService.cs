@@ -84,6 +84,13 @@ namespace moneyManagerBE.Services.Records
             return dbResponseList;
         }
 
+        public bool DoesExist(int recordId)
+        {
+            var record = _appDbContext.Records.FirstOrDefault(theRecord => theRecord.Id == recordId);
+
+            return record != null ? true : false;
+        }
+
         public DbResponse<Record> GetRecordById(int userId, int accountId, int recordId)
         {
             var foundData = _appDbContext.Records

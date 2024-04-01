@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using moneyManagerBE.Class;
+using moneyManagerBE.Logs;
 using moneyManagerBE.Models;
 using moneyManagerBE.Services.Records;
 using moneyManagerBE.Services.Users;
@@ -17,11 +18,13 @@ namespace moneyManagerBE.Controllers
         private readonly IRecordsService _recordsService;
         private readonly IUsersService _usersService;
 
+        private readonly ILogsService _logsService;
 
-        public RecordsController(IRecordsService recordsService, IUsersService usersService)
+        public RecordsController(IRecordsService recordsService, IUsersService usersService, ILogsService logsService)
         {
             _recordsService = recordsService;
             _usersService = usersService;
+            _logsService = logsService;
         }
 
         [Authorize]
@@ -116,6 +119,8 @@ namespace moneyManagerBE.Controllers
 
             if (dbResponse.IsSuccess)
             {
+                dbResponse.Data.Logs = _logsService.GetLogsByRecordID(recordId);
+
                 return Ok(new Response<Record>
                 {
                     Data = dbResponse.Data,
