@@ -17,6 +17,8 @@ namespace moneyManagerBE.Services.Records
             // check if same
             var sameRecordFound = _appDbContext.Records.Where(theRecord => theRecord.Name == record.Name).FirstOrDefault();
 
+            Console.WriteLine(sameRecordFound);
+
             if (sameRecordFound != null)
             {
                 return new DbResponse<Record>
