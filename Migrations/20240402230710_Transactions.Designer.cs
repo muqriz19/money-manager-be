@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using moneyManagerBE.Data;
@@ -11,9 +12,11 @@ using moneyManagerBE.Data;
 namespace moneyManagerBE.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240402230710_Transactions")]
+    partial class Transactions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -117,7 +120,7 @@ namespace moneyManagerBE.Migrations
 
                     b.HasIndex("RecordId");
 
-                    b.ToTable("Logs");
+                    b.ToTable("Log");
                 });
 
             modelBuilder.Entity("moneyManagerBE.Models.Record", b =>
@@ -147,46 +150,6 @@ namespace moneyManagerBE.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Records");
-                });
-
-            modelBuilder.Entity("moneyManagerBE.Models.Transaction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTimeOffset?>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<int>("LogId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("TransactionType")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("Value")
-                        .HasColumnType("numeric");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LogId");
-
-                    b.ToTable("Transactions");
                 });
 
             modelBuilder.Entity("moneyManagerBE.Models.User", b =>
@@ -224,20 +187,6 @@ namespace moneyManagerBE.Migrations
                         .HasForeignKey("RecordId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("moneyManagerBE.Models.Transaction", b =>
-                {
-                    b.HasOne("moneyManagerBE.Models.Log", null)
-                        .WithMany("Transactions")
-                        .HasForeignKey("LogId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("moneyManagerBE.Models.Log", b =>
-                {
-                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("moneyManagerBE.Models.Record", b =>

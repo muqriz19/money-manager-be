@@ -11,6 +11,7 @@ using moneyManagerBE.Services.Categories;
 using moneyManagerBE.Services.Logs;
 using moneyManagerBE.Services.Records;
 using moneyManagerBE.Services.Users;
+using moneyManagerBE.Transactions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -68,6 +69,7 @@ builder.Services.AddScoped<IAuthorization, AuthorizationService>();
 builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddScoped<IRecordsService, RecordsService>();
 builder.Services.AddScoped<ILogsService, LogsService>();
+builder.Services.AddScoped<ITransactionsService, TransactionsService>();
 
 // add auto mapper
 // but how does it get the AutoMapperProfile.cs to run and map
@@ -112,6 +114,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 var app = builder.Build();
 
+// middleware?
+// app.Run(async (context) => {
+//     await context.Response.WriteAsync("Test");
+// });
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -122,6 +129,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+// apply cors
 app.UseCors(myOrigin);
 
 app.UseHttpsRedirection();
@@ -130,7 +138,6 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 
 
-// apply cors
 
 app.UseAuthorization();
 

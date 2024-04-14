@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using moneyManagerBE.Class;
 using moneyManagerBE.Data;
 using moneyManagerBE.Models;
@@ -16,8 +17,6 @@ namespace moneyManagerBE.Services.Records
         {
             // check if same
             var sameRecordFound = _appDbContext.Records.Where(theRecord => theRecord.Name == record.Name).FirstOrDefault();
-
-            Console.WriteLine(sameRecordFound);
 
             if (sameRecordFound != null)
             {
@@ -98,6 +97,8 @@ namespace moneyManagerBE.Services.Records
             var foundData = _appDbContext.Records
             .Where(data => data.UserId == userId)
             .Where(data => data.AccountId == accountId)
+            .Include(e => e.Logs)
+            .ThenInclude(e => e.Transactions)
             .FirstOrDefault(data => data.Id == recordId);
 
             if (foundData != null)

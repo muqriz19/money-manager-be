@@ -17,7 +17,6 @@ namespace moneyManagerBE.Controllers
 
         private readonly IRecordsService _recordsService;
         private readonly IUsersService _usersService;
-
         private readonly ILogsService _logsService;
 
         public RecordsController(IRecordsService recordsService, IUsersService usersService, ILogsService logsService)
@@ -119,8 +118,6 @@ namespace moneyManagerBE.Controllers
 
             if (dbResponse.IsSuccess)
             {
-                dbResponse.Data.Logs = _logsService.GetLogsByRecordID(recordId);
-
                 return Ok(new Response<Record>
                 {
                     Data = dbResponse.Data,

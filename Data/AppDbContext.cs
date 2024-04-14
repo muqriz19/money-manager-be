@@ -14,6 +14,8 @@ namespace moneyManagerBE.Data
 
         public DbSet<Log> Logs { get; set; }
 
+        public DbSet<Transaction> Transactions { get; set; }
+
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
 

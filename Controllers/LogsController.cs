@@ -2,11 +2,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using moneyManagerBE.Class;
+using moneyManagerBE.Logs;
 using moneyManagerBE.Models;
 using moneyManagerBE.Services.Records;
 using moneyManagerBE.Services.Users;
 
-namespace moneyManagerBE.Logs
+namespace moneyManagerBE.Controllers
 {
 
     [ApiController]
@@ -166,7 +167,7 @@ namespace moneyManagerBE.Logs
                 }
                 else
                 {
-                    validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize, "");
+                    validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize, string.Empty);
                 }
 
                 var dbResponse = _logsService.GetAllLogs(userId, validFilter.PageNumber, validFilter.PageSize, validFilter.Search);

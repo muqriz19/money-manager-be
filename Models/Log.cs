@@ -10,5 +10,6 @@ namespace moneyManagerBE.Models
         public string? Description { get; set; } = string.Empty;
         public int CategoryId { get; set; }
         public int UserId { get; set; }
+        public List<Transaction> Transactions { get; set; } = [];
     }
 }

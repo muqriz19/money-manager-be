@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using moneyManagerBE.Data;
@@ -11,9 +12,11 @@ using moneyManagerBE.Data;
 namespace moneyManagerBE.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240404074713_TransactionsFix3")]
+    partial class TransactionsFix3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -184,8 +187,6 @@ namespace moneyManagerBE.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LogId");
-
                     b.ToTable("Transactions");
                 });
 
@@ -224,20 +225,6 @@ namespace moneyManagerBE.Migrations
                         .HasForeignKey("RecordId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("moneyManagerBE.Models.Transaction", b =>
-                {
-                    b.HasOne("moneyManagerBE.Models.Log", null)
-                        .WithMany("Transactions")
-                        .HasForeignKey("LogId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("moneyManagerBE.Models.Log", b =>
-                {
-                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("moneyManagerBE.Models.Record", b =>
