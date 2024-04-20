@@ -3,44 +3,74 @@ using moneyManagerBE.Class;
 using moneyManagerBE.Data;
 using moneyManagerBE.Logs;
 using moneyManagerBE.Models;
+using moneyManagerBE.Services.Categories;
+using Newtonsoft.Json;
 
 namespace moneyManagerBE.Services.Logs
 {
     public class LogsService : ILogsService
     {
         private readonly AppDbContext _appDbContext;
+        private readonly ICategoriesServices _categoriesService;
 
-        public LogsService(AppDbContext appDbContext)
+        public LogsService(AppDbContext appDbContext, ICategoriesServices categoriesServices)
         {
             _appDbContext = appDbContext;
+            _categoriesService = categoriesServices;
         }
 
-        public DbResponse<Log> AddLog(Log log)
+        public DbResponse<Log> AddLog(LogDto logDto)
         {
-            if (DoesExist(log))
+            if (DoesExist(logDto))
             {
                 return new DbResponse<Log>
                 {
-                    Data = log,
                     IsSuccess = false,
                     Message = "Log with the same name already created"
                 };
             }
             else
             {
-                _appDbContext.Logs.Add(log);
+                Category category = _categoriesService.GetCategoryById(logDto.CategoryId).Data;
+
+                LogDb newLog = new LogDb
+                {
+                    Id = logDto.Id,
+                    Name = logDto.Name,
+                    Description = logDto.Description,
+                    RecordId = logDto.RecordId,
+                    UserId = logDto.UserId,
+                    Value = logDto.Value,
+                    Category = JsonConvert.SerializeObject(category),
+                    CreatedDate = logDto.CreatedDate
+                };
+
+                _appDbContext.Logs.Add(newLog);
                 _appDbContext.SaveChanges();
+
+                Log finalLog = new Log
+                {
+                    Id = logDto.Id,
+                    Name = logDto.Name,
+                    Description = logDto.Description,
+                    RecordId = logDto.RecordId,
+                    UserId = logDto.UserId,
+                    Value = logDto.Value,
+                    Category = category,
+                    CreatedDate = logDto.CreatedDate,
+                    Transactions = []
+                };
 
                 return new DbResponse<Log>
                 {
-                    Data = log,
+                    Data = finalLog,
                     IsSuccess = true,
                     Message = "Log successfully created"
                 };
             }
         }
 
-        public bool DoesExist(Log log)
+        public bool DoesExist(LogDto log)
         {
             var logFind = _appDbContext.Logs.Where(dataLog => dataLog.UserId == log.UserId).Where(dataLog => dataLog.Name == log.Name).FirstOrDefault();
 
@@ -59,12 +89,14 @@ namespace moneyManagerBE.Services.Logs
             string searchTerm = search.ToLower();
 
             List<Log> allLogs = [];
+            List<LogDb> allLogsDb = [];
+
             // if search use searched total, if not then db all count
             int totalCount = 0;
 
             if (!string.IsNullOrEmpty(searchTerm))
             {
-                allLogs = _appDbContext.Logs
+                allLogsDb = _appDbContext.Logs
                 .Where(data => data.UserId == userId)
                 .Where(data =>
                 data.Name.ToLower().Contains(searchTerm) ||
@@ -78,13 +110,31 @@ namespace moneyManagerBE.Services.Logs
             }
             else
             {
-                allLogs = _appDbContext.Logs
+                allLogsDb = _appDbContext.Logs
                 .Where(data => data.UserId == userId)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
 
                 totalCount = _appDbContext.Logs.Count();
+            }
+
+            foreach (LogDb log in allLogsDb)
+            {
+                Log newLog = new Log
+                {
+                    Id = log.Id,
+                    CreatedDate = log.CreatedDate,
+                    Description = log.Description,
+                    Name = log.Name,
+                    RecordId = log.RecordId,
+                    Transactions = [],
+                    Category = JsonConvert.DeserializeObject<Category>(log.Category)
+                };
+
+                allLogs.Add(
+                    newLog
+                );
             }
 
             DbResponseList<List<Log>> dbResponseList = new DbResponseList<List<Log>>
@@ -98,12 +148,12 @@ namespace moneyManagerBE.Services.Logs
             return dbResponseList;
         }
 
-        public List<Log> GetLogsByRecordID(int recordId)
-        {
-            var allLogs = _appDbContext.Logs.Where(log => log.RecordId == recordId).ToList();
+        // public List<Log> GetLogsByRecordID(int recordId)
+        // {
+        //     var allLogs = _appDbContext.Logs.Where(log => log.RecordId == recordId).ToList();
 
-            return allLogs;
-        }
+        //     return allLogs;
+        // }
 
         public DbResponse<Log> DeleteLogById(int logId)
         {
@@ -132,8 +182,8 @@ namespace moneyManagerBE.Services.Logs
 
         public DbResponse<Log> UpdateLog(Log log)
         {
-            _appDbContext.Logs.Update(log);
-            _appDbContext.SaveChanges();
+            // _appDbContext.Logs.Update(log);
+            // _appDbContext.SaveChanges();
 
             return new DbResponse<Log>
             {

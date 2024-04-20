@@ -11,7 +11,6 @@ namespace moneyManagerBE.Services.Categories
         DbResponse<List<string>> DeleteCategory(int id);
 
         DbResponse<Category> UpdateCategory(Category category);
-
-        DbResponse<Category> GetCategoryById(int userId, int accountId);
+        DbResponse<Category> GetCategoryById(int categoryId);
     }
 }

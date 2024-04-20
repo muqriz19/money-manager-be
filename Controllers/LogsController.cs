@@ -28,13 +28,13 @@ namespace moneyManagerBE.Controllers
 
         [Authorize]
         [HttpPost]
-        public IActionResult CreateLog([FromBody] Log log)
+        public IActionResult CreateLog([FromBody] LogDto logDto)
         {
-            var userExistDbResponse = _usersServices.CheckUser(log.UserId);
+            var userExistDbResponse = _usersServices.CheckUser(logDto.UserId);
 
             if (userExistDbResponse.IsSuccess == false)
             {
-                var response = new Response<Log>
+                var response = new Response<string[]>
                 {
                     Status = StatusCodes.Status400BadRequest,
                     Message = userExistDbResponse.Message
@@ -44,11 +44,11 @@ namespace moneyManagerBE.Controllers
             }
 
             // check if record exist
-            bool recordExist = _recordsService.DoesExist(log.RecordId);
+            bool recordExist = _recordsService.DoesExist(logDto.RecordId);
 
             if (recordExist == false)
             {
-                var response = new Response<Log>
+                var response = new Response<string[]>
                 {
                     Status = StatusCodes.Status400BadRequest,
                     Message = "Record Does Not Exist"
@@ -57,7 +57,7 @@ namespace moneyManagerBE.Controllers
                 return BadRequest(response);
             }
 
-            DbResponse<Log> dbResponse = _logsService.AddLog(log);
+            DbResponse<Log> dbResponse = _logsService.AddLog(logDto);
 
             if (dbResponse.IsSuccess)
             {
@@ -72,7 +72,7 @@ namespace moneyManagerBE.Controllers
             }
             else
             {
-                var newReponse = new Response<Log>
+                var newReponse = new Response<string[]>
                 {
                     Status = StatusCodes.Status400BadRequest,
                     Message = dbResponse.Message,

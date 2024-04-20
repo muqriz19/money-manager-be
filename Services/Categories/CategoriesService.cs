@@ -122,9 +122,9 @@ namespace moneyManagerBE.Services.Categories
             };
         }
 
-        public DbResponse<Category> GetCategoryById(int userId, int categoryId)
+        public DbResponse<Category> GetCategoryById(int categoryId)
         {
-            var foundData = _appDbContext.Categories.Where(data => data.UserId == userId).FirstOrDefault(data => data.Id == categoryId);
+            var foundData = _appDbContext.Categories.FirstOrDefault(data => data.Id == categoryId);
 
             if (foundData != null)
             {

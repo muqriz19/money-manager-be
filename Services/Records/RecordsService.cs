@@ -95,11 +95,12 @@ namespace moneyManagerBE.Services.Records
         public DbResponse<Record> GetRecordById(int userId, int accountId, int recordId)
         {
             var foundData = _appDbContext.Records
-            .Where(data => data.UserId == userId)
-            .Where(data => data.AccountId == accountId)
+            .Where(data => data.Id == recordId)
+            // .Where(data => data.UserId == userId)
+            // .Where(data => data.AccountId == accountId)
             .Include(e => e.Logs)
             .ThenInclude(e => e.Transactions)
-            .FirstOrDefault(data => data.Id == recordId);
+            .FirstOrDefault();
 
             if (foundData != null)
             {

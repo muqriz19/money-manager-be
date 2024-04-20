@@ -114,3 +114,4 @@
 /home/m/Projects/Workspace/Code/Money Manager/moneyManagerBE/obj/Debug/net8.0/moneyManagerBE.pdb
 /home/m/Projects/Workspace/Code/Money Manager/moneyManagerBE/obj/Debug/net8.0/moneyManagerBE.genruntimeconfig.cache
 /home/m/Projects/Workspace/Code/Money Manager/moneyManagerBE/obj/Debug/net8.0/ref/moneyManagerBE.dll
+/home/m/Projects/Workspace/Code/Money Manager/moneyManagerBE/bin/Debug/net8.0/Newtonsoft.Json.dll

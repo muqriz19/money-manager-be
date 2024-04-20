@@ -12,7 +12,7 @@ namespace moneyManagerBE.Data
 
         public DbSet<Record> Records { get; set; }
 
-        public DbSet<Log> Logs { get; set; }
+        public DbSet<LogDb> Logs { get; set; }
 
         public DbSet<Transaction> Transactions { get; set; }
 
@@ -23,6 +23,18 @@ namespace moneyManagerBE.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<LogDb>().Property(log => log.Category).HasColumnType("json");
+
+            // builder.Entity<Record>()
+            // .HasMany(e => e.Logs)
+            // .WithOne(e => e.Record)
+            // .HasForeignKey(e => e.RecordId);
+
+            // builder.Entity<Log>()
+            // .HasOne(e => e.Record)
+            // .WithMany(e => e.Logs)
+            // .HasForeignKey(e => e.RecordId);
+
             base.OnModelCreating(builder);
         }
     }

@@ -166,10 +166,10 @@ namespace moneyManagerBE.Controllers
         }
 
         [Authorize]
-        [HttpGet("{userId}/{categoryId}")]
-        public IActionResult GetCategoryById(int userId, int categoryId)
+        [HttpGet("/{categoryId}")]
+        public IActionResult GetCategoryById(int categoryId)
         {
-            var dbResponse = _categoriesServices.GetCategoryById(userId, categoryId);
+            var dbResponse = _categoriesServices.GetCategoryById(categoryId);
 
             if (dbResponse.IsSuccess)
             {
