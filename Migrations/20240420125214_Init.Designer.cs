@@ -12,8 +12,8 @@ using moneyManagerBE.Data;
 namespace moneyManagerBE.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240420090045_UpgradeLogData2")]
-    partial class UpgradeLogData2
+    [Migration("20240420125214_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -94,8 +94,9 @@ namespace moneyManagerBE.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("integer");
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("json");
 
                     b.Property<DateTimeOffset?>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
@@ -117,8 +118,6 @@ namespace moneyManagerBE.Migrations
                         .HasColumnType("numeric");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
 
                     b.HasIndex("RecordId");
 
@@ -189,8 +188,6 @@ namespace moneyManagerBE.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LogId");
-
                     b.ToTable("Transactions");
                 });
 
@@ -224,33 +221,11 @@ namespace moneyManagerBE.Migrations
 
             modelBuilder.Entity("moneyManagerBE.Models.Log", b =>
                 {
-                    b.HasOne("moneyManagerBE.Models.Category", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("moneyManagerBE.Models.Record", null)
                         .WithMany("Logs")
                         .HasForeignKey("RecordId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("moneyManagerBE.Models.Transaction", b =>
-                {
-                    b.HasOne("moneyManagerBE.Models.Log", null)
-                        .WithMany("Transactions")
-                        .HasForeignKey("LogId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("moneyManagerBE.Models.Log", b =>
-                {
-                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("moneyManagerBE.Models.Record", b =>

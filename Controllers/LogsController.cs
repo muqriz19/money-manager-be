@@ -28,6 +28,7 @@ namespace moneyManagerBE.Controllers
 
         [Authorize]
         [HttpPost]
+        [ProducesResponseType(typeof(Response<Log>), 200)]
         public IActionResult CreateLog([FromBody] LogDto logDto)
         {
             var userExistDbResponse = _usersServices.CheckUser(logDto.UserId);
@@ -151,46 +152,46 @@ namespace moneyManagerBE.Controllers
             }
         }
 
-        [Authorize]
-        [HttpGet("{userId}")]
-        public IActionResult GetAllLogs(int userId, [FromQuery] PaginationFilter filter)
-        {
-            DbResponse<User> userExistDbResponse = _usersServices.CheckUser(userId);
+        // [Authorize]
+        // [HttpGet("{userId}")]
+        // public IActionResult GetAllLogs(int userId, [FromQuery] PaginationFilter filter)
+        // {
+        //     DbResponse<User> userExistDbResponse = _usersServices.CheckUser(userId);
 
-            if (userExistDbResponse.IsSuccess)
-            {
-                PaginationFilter validFilter;
+        //     if (userExistDbResponse.IsSuccess)
+        //     {
+        //         PaginationFilter validFilter;
 
-                if (filter.Search is not null)
-                {
-                    validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize, filter.Search);
-                }
-                else
-                {
-                    validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize, string.Empty);
-                }
+        //         if (filter.Search is not null)
+        //         {
+        //             validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize, filter.Search);
+        //         }
+        //         else
+        //         {
+        //             validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize, string.Empty);
+        //         }
 
-                var dbResponse = _logsService.GetAllLogs(userId, validFilter.PageNumber, validFilter.PageSize, validFilter.Search);
+        //         var dbResponse = _logsService.GetAllLogs(userId, validFilter.PageNumber, validFilter.PageSize, validFilter.Search);
 
-                return Ok(new ResponseList<List<Log>>
-                {
-                    Data = dbResponse.Data,
-                    Message = dbResponse.Message,
-                    Status = StatusCodes.Status200OK,
-                    Total = dbResponse.Total
-                });
-            }
-            else
-            {
-                var response = new Response<Log>
-                {
-                    Status = StatusCodes.Status400BadRequest,
-                    Message = userExistDbResponse.Message
-                };
+        //         return Ok(new ResponseList<List<Log>>
+        //         {
+        //             Data = dbResponse.Data,
+        //             Message = dbResponse.Message,
+        //             Status = StatusCodes.Status200OK,
+        //             Total = dbResponse.Total
+        //         });
+        //     }
+        //     else
+        //     {
+        //         var response = new Response<Log>
+        //         {
+        //             Status = StatusCodes.Status400BadRequest,
+        //             Message = userExistDbResponse.Message
+        //         };
 
-                return BadRequest(response);
-            }
-        }
+        //         return BadRequest(response);
+        //     }
+        // }
 
         [Authorize]
         [HttpDelete("{logId}")]

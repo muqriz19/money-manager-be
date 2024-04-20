@@ -99,7 +99,7 @@ namespace moneyManagerBE.Services.Records
             // .Where(data => data.UserId == userId)
             // .Where(data => data.AccountId == accountId)
             .Include(e => e.Logs)
-            .ThenInclude(e => e.Transactions)
+            // .ThenInclude(e => e.Transactions)
             .FirstOrDefault();
 
             if (foundData != null)
