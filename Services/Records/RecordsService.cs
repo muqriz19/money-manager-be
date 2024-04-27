@@ -96,10 +96,8 @@ namespace moneyManagerBE.Services.Records
         {
             var foundData = _appDbContext.Records
             .Where(data => data.Id == recordId)
-            // .Where(data => data.UserId == userId)
-            // .Where(data => data.AccountId == accountId)
             .Include(e => e.Logs)
-            // .ThenInclude(e => e.Transactions)
+            .ThenInclude(e => e.Transactions)
             .FirstOrDefault();
 
             if (foundData != null)

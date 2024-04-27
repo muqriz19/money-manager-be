@@ -1,5 +1,5 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using moneyManagerBE.Class;
 using moneyManagerBE.Logs;
@@ -18,12 +18,15 @@ namespace moneyManagerBE.Controllers
         private readonly IRecordsService _recordsService;
         private readonly IUsersService _usersService;
         private readonly ILogsService _logsService;
+        private readonly IMapper _mapper;
 
-        public RecordsController(IRecordsService recordsService, IUsersService usersService, ILogsService logsService)
+
+        public RecordsController(IRecordsService recordsService, IUsersService usersService, ILogsService logsService, IMapper mapper)
         {
             _recordsService = recordsService;
             _usersService = usersService;
             _logsService = logsService;
+            _mapper = mapper;
         }
 
         [Authorize]
@@ -118,16 +121,18 @@ namespace moneyManagerBE.Controllers
 
             if (dbResponse.IsSuccess)
             {
-                return Ok(new Response<Record>
+                var responseData = _mapper.Map<RecordResponseDto>(dbResponse.Data);
+
+                return Ok(new Response<RecordResponseDto>
                 {
-                    Data = dbResponse.Data,
+                    Data = responseData,
                     Message = dbResponse.Message,
                     Status = 200
                 });
             }
             else
             {
-                return NotFound(new Response<Record>
+                return NotFound(new Response<RecordResponseDto>
                 {
                     Message = dbResponse.Message,
                     Status = 404
