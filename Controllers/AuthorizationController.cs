@@ -50,13 +50,13 @@ namespace moneyManagerBE.Controllers
         [HttpPost]
         public IActionResult Login([FromBody] Login login)
         {
-            DbResponse<LoginData> dbResponse = _authorizationService.Login(login.Email, login.Password);
+            DbResponse<LoginResponseDto> dbResponse = _authorizationService.Login(login.Email, login.Password);
 
             if (dbResponse.IsSuccess)
             {
                 dbResponse.Data.Token = _authorizationService.GenerateToken();
 
-                var response = new Response<LoginData>
+                var response = new Response<LoginResponseDto>
                 {
                     Status = StatusCodes.Status201Created,
                     Message = dbResponse.Message,
@@ -67,7 +67,7 @@ namespace moneyManagerBE.Controllers
             }
             else
             {
-                var response = new Response<LoginData>
+                var response = new Response<LoginResponseDto>
                 {
                     Status = StatusCodes.Status403Forbidden,
                     Message = dbResponse.Message,

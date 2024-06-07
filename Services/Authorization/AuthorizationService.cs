@@ -56,7 +56,7 @@ namespace moneyManagerBE.Services.Authorization
             }
         }
 
-        public DbResponse<LoginData> Login(string email, string password)
+        public DbResponse<LoginResponseDto> Login(string email, string password)
         {
             var foundUser = _appDbContext.Users.Where(user => user.Email == email).FirstOrDefault();
 
@@ -64,22 +64,16 @@ namespace moneyManagerBE.Services.Authorization
             {
                 if (VerifyHashPassword(password, foundUser.Password))
                 {
-                    return new DbResponse<LoginData>
+                    return new DbResponse<LoginResponseDto>
                     {
                         IsSuccess = true,
                         Message = "Valid login",
-                        Data = new LoginData
-                        {
-                            Name = foundUser.Name,
-                            Email = foundUser.Email,
-                            CreatedDate = foundUser.CreatedDate,
-                            UserId = foundUser.Id
-                        }
+                        Data = _mapper.Map<LoginResponseDto>(foundUser)
                     };
                 }
                 else
                 {
-                    return new DbResponse<LoginData>
+                    return new DbResponse<LoginResponseDto>
                     {
                         IsSuccess = false,
                         Message = "Invalid login"
@@ -89,7 +83,7 @@ namespace moneyManagerBE.Services.Authorization
             }
             else
             {
-                return new DbResponse<LoginData>
+                return new DbResponse<LoginResponseDto>
                 {
                     IsSuccess = false,
                     Message = "This login does not exist"

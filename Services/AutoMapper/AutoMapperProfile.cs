@@ -13,6 +13,7 @@ namespace moneyManagerBE.Services.AutoMapper
         public AutoMapperProfile(
             )
         {
+            CreateMap<User, LoginResponseDto>();
 
             CreateMap<User, UserDto>();
 
