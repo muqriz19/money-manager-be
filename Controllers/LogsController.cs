@@ -58,11 +58,11 @@ namespace moneyManagerBE.Controllers
                 return BadRequest(response);
             }
 
-            DbResponse<Log> dbResponse = _logsService.AddLog(logDto);
+            DbResponse<LogResponseDto> dbResponse = _logsService.AddLog(logDto);
 
             if (dbResponse.IsSuccess)
             {
-                var newReponse = new Response<Log>
+                var newReponse = new Response<LogResponseDto>
                 {
                     Status = StatusCodes.Status200OK,
                     Message = dbResponse.Message,
@@ -85,7 +85,7 @@ namespace moneyManagerBE.Controllers
 
         [Authorize]
         [HttpPut]
-        public IActionResult UpdateLog([FromBody] Log log)
+        public IActionResult UpdateLog([FromBody] LogDto log)
         {
             var userExistDbResponse = _usersServices.CheckUser(log.UserId);
 
@@ -127,11 +127,11 @@ namespace moneyManagerBE.Controllers
                 return BadRequest(response);
             }
 
-            DbResponse<Log> dbResponse = _logsService.UpdateLog(log);
+            DbResponse<LogResponseDto> dbResponse = _logsService.UpdateLog(log);
 
             if (dbResponse.IsSuccess)
             {
-                var newReponse = new Response<Log>
+                var newReponse = new Response<LogResponseDto>
                 {
                     Status = StatusCodes.Status200OK,
                     Message = dbResponse.Message,
@@ -142,7 +142,7 @@ namespace moneyManagerBE.Controllers
             }
             else
             {
-                var newReponse = new Response<Log>
+                var newReponse = new Response<LogResponseDto>
                 {
                     Status = StatusCodes.Status400BadRequest,
                     Message = dbResponse.Message,
@@ -151,47 +151,6 @@ namespace moneyManagerBE.Controllers
                 return BadRequest(newReponse);
             }
         }
-
-        // [Authorize]
-        // [HttpGet("{userId}")]
-        // public IActionResult GetAllLogs(int userId, [FromQuery] PaginationFilter filter)
-        // {
-        //     DbResponse<User> userExistDbResponse = _usersServices.CheckUser(userId);
-
-        //     if (userExistDbResponse.IsSuccess)
-        //     {
-        //         PaginationFilter validFilter;
-
-        //         if (filter.Search is not null)
-        //         {
-        //             validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize, filter.Search);
-        //         }
-        //         else
-        //         {
-        //             validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize, string.Empty);
-        //         }
-
-        //         var dbResponse = _logsService.GetAllLogs(userId, validFilter.PageNumber, validFilter.PageSize, validFilter.Search);
-
-        //         return Ok(new ResponseList<List<Log>>
-        //         {
-        //             Data = dbResponse.Data,
-        //             Message = dbResponse.Message,
-        //             Status = StatusCodes.Status200OK,
-        //             Total = dbResponse.Total
-        //         });
-        //     }
-        //     else
-        //     {
-        //         var response = new Response<Log>
-        //         {
-        //             Status = StatusCodes.Status400BadRequest,
-        //             Message = userExistDbResponse.Message
-        //         };
-
-        //         return BadRequest(response);
-        //     }
-        // }
 
         [Authorize]
         [HttpDelete("{logId}")]

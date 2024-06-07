@@ -1,3 +1,4 @@
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using moneyManagerBE.Class;
 using moneyManagerBE.Data;
@@ -125,6 +126,7 @@ namespace moneyManagerBE.Services.Records
 
             if (record != null)
             {
+                // removes record
                 _appDbContext.Records.Remove(record);
                 _appDbContext.SaveChanges();
 

@@ -11,11 +11,11 @@ namespace moneyManagerBE.Controllers
     [Route("api/[controller]")]
     public class CategoriesController : ControllerBase
     {
-        private readonly ICategoriesServices _categoriesServices;
+        private readonly ICategoriesService _categoriesServices;
         private readonly IUsersService _usersServices;
 
         public CategoriesController(
-            ICategoriesServices categoriesServices,
+            ICategoriesService categoriesServices,
             IUsersService usersServices
             )
         {

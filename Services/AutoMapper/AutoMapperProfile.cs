@@ -1,14 +1,19 @@
 using AutoMapper;
 using moneyManagerBE.Dtos;
 using moneyManagerBE.Models;
+using moneyManagerBE.Services.Categories;
+using moneyManagerBE.Utils;
 using Newtonsoft.Json;
 
 namespace moneyManagerBE.Services.AutoMapper
 {
     public class AutoMapperProfile : Profile
     {
-        public AutoMapperProfile()
+
+        public AutoMapperProfile(
+            )
         {
+
             CreateMap<User, UserDto>();
 
             CreateMap<Record, RecordResponseDto>();
@@ -17,14 +22,32 @@ namespace moneyManagerBE.Services.AutoMapper
             .ForMember(dest => dest.Logs, opt => opt.MapFrom(src => LogToLogResponseDto(src.Logs)));
 
             CreateMap<Log, LogResponseDto>()
+            .ForMember(dest => dest.Category, opt => opt.MapFrom(src => CategoryJsonStringToCategory(src.Category)))
+            .AfterMap<LogAction>();
+
+            CreateMap<LogDto, Log>()
+            .AfterMap<CategoryAction>();
+
+            CreateMap<TransactionDto, Transaction>()
+            .AfterMap<TransactionAction>();
+
+            CreateMap<TransactionDto, TransactionResponseDto>()
+            .AfterMap<TransactionDtoToTransactionResponseAction>();
+
+            CreateMap<Transaction, TransactionResponseDto>()
             .ForMember(dest => dest.Category, opt => opt.MapFrom(src => CategoryJsonStringToCategory(src.Category)));
-            // .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => CategoryJsonStringToCategoryId(src.Category)));
         }
 
         public Category CategoryJsonStringToCategory(string category)
         {
-            Console.WriteLine(category);
             Category categoryObject = JsonConvert.DeserializeObject<Category>(category);
+
+            return categoryObject;
+        }
+
+        public T JsonStringToType<T>(string jsonString)
+        {
+            T categoryObject = JsonConvert.DeserializeObject<T>(jsonString);
 
             return categoryObject;
         }
@@ -53,13 +76,38 @@ namespace moneyManagerBE.Services.AutoMapper
                     RecordId = theLog.RecordId,
                     UserId = theLog.UserId,
                     Value = theLog.Value,
-                    Transactions = theLog.Transactions
+                    Transactions = TransctionsToTransactionResponseDtos(theLog.Transactions)
                 };
 
                 allLogResponseDtos.Add(theLogResponse);
             }
 
             return allLogResponseDtos;
+        }
+
+        public List<TransactionResponseDto> TransctionsToTransactionResponseDtos(List<Transaction> transactions)
+        {
+            List<TransactionResponseDto> allList = [];
+
+            foreach (Transaction transaction in transactions)
+            {
+                TransactionResponseDto newTransaction = new TransactionResponseDto
+                {
+                    Category = JsonStringToType<Category>(transaction.Category),
+                    CreatedDate = transaction.CreatedDate,
+                    Description = transaction.Description,
+                    Id = transaction.Id,
+                    LogId = transaction.LogId,
+                    Name = transaction.Name,
+                    TransactionType = transaction.TransactionType,
+                    UserId = transaction.UserId,
+                    Value = transaction.Value
+                };
+
+                allList.Add(newTransaction);
+            }
+
+            return allList;
         }
     }
 }

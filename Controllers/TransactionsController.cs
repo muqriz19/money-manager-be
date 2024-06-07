@@ -22,7 +22,7 @@ namespace moneyManagerBE.Controllers
 
         [Authorize]
         [HttpPost]
-        public IActionResult CreateTransaction([FromBody] Transaction transaction)
+        public IActionResult CreateTransaction([FromBody] TransactionDto transaction)
         {
             bool doesExist = _transactionService.DoesExistId(transaction.Id);
 
@@ -46,10 +46,9 @@ namespace moneyManagerBE.Controllers
                 });
             }
 
+            DbResponse<TransactionResponseDto> dbResponse = _transactionService.AddTransaction(transaction);
 
-            DbResponse<Transaction> dbResponse = _transactionService.AddTransaction(transaction);
-
-            return Ok(new Response<Transaction>
+            return Ok(new Response<TransactionResponseDto>
             {
                 Status = StatusCodes.Status200OK,
                 Message = dbResponse.Message,
@@ -72,9 +71,9 @@ namespace moneyManagerBE.Controllers
                 });
             }
 
-            DbResponse<Transaction> dbResponse = _transactionService.DeleteTransactionById(transactionId);
+            DbResponse<TransactionResponseDto> dbResponse = _transactionService.DeleteTransactionById(transactionId);
 
-            return Ok(new Response<Transaction>
+            return Ok(new Response<TransactionResponseDto>
             {
                 Status = StatusCodes.Status200OK,
                 Message = dbResponse.Message,
@@ -83,13 +82,13 @@ namespace moneyManagerBE.Controllers
 
         [Authorize]
         [HttpPut]
-        public IActionResult UpdateTransaction([FromBody] Transaction transaction)
+        public IActionResult UpdateTransaction([FromBody] TransactionDto transaction)
         {
             bool doesExist = _transactionService.DoesExistId(transaction.Id);
 
             if (doesExist == false)
             {
-                return BadRequest(new Response<Transaction>
+                return BadRequest(new Response<TransactionDto>
                 {
                     Message = $"Transaction with {transaction.Id} does not exists",
                     Status = StatusCodes.Status400BadRequest
@@ -100,16 +99,16 @@ namespace moneyManagerBE.Controllers
 
             if (logExist == false)
             {
-                return BadRequest(new Response<Transaction>
+                return BadRequest(new Response<TransactionDto>
                 {
                     Message = $"Log with {transaction.LogId} does not exist",
                     Status = StatusCodes.Status400BadRequest
                 });
             }
 
-            DbResponse<Transaction> dbResponse = _transactionService.UpdateTransaction(transaction);
+            DbResponse<TransactionResponseDto> dbResponse = _transactionService.UpdateTransaction(transaction);
 
-            return Ok(new Response<Transaction>
+            return Ok(new Response<TransactionResponseDto>
             {
                 Status = StatusCodes.Status200OK,
                 Message = dbResponse.Message,

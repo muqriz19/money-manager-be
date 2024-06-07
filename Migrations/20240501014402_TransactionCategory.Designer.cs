@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using moneyManagerBE.Data;
@@ -11,9 +12,11 @@ using moneyManagerBE.Data;
 namespace moneyManagerBE.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240501014402_TransactionCategory")]
+    partial class TransactionCategory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -147,8 +150,6 @@ namespace moneyManagerBE.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountId");
-
                     b.ToTable("Records");
                 });
 
@@ -230,15 +231,6 @@ namespace moneyManagerBE.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("moneyManagerBE.Models.Record", b =>
-                {
-                    b.HasOne("moneyManagerBE.Models.Account", null)
-                        .WithMany("Records")
-                        .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("moneyManagerBE.Models.Transaction", b =>
                 {
                     b.HasOne("moneyManagerBE.Models.Log", null)
@@ -246,11 +238,6 @@ namespace moneyManagerBE.Migrations
                         .HasForeignKey("LogId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("moneyManagerBE.Models.Account", b =>
-                {
-                    b.Navigation("Records");
                 });
 
             modelBuilder.Entity("moneyManagerBE.Models.Log", b =>

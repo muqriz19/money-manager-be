@@ -5,14 +5,14 @@ namespace moneyManagerBE.Transactions
 {
     public interface ITransactionsService
     {
-        public DbResponse<Transaction> AddTransaction(Transaction transaction);
+        public DbResponse<TransactionResponseDto> AddTransaction(TransactionDto transaction);
 
         public bool DoesExistId(int transactionId);
 
-        public DbResponse<Transaction> UpdateTransaction(Transaction transaction);
+        public DbResponse<TransactionResponseDto> UpdateTransaction(TransactionDto transaction);
 
-        // public DbResponseList<List<Log>> GetAllLogs(int userId, int pageNumber, int pageSize, string search);
+        public DbResponse<TransactionResponseDto> DeleteTransactionById(int transactionId);
 
-        public DbResponse<Transaction> DeleteTransactionById(int transactionId);
+        public DbResponse<List<TransactionResponseDto>> GetTransactionsByLogId(int logId);
     }
 }

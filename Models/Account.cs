@@ -12,5 +12,7 @@ namespace moneyManagerBE.Models
         public DateTimeOffset? CreatedDate { get; set; } = new DateTimeOffset();
 
         public int UserId { get; set; }
+
+        public List<Record> Records { get; set; } = [];
     }
 }

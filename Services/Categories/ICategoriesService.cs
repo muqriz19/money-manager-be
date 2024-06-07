@@ -3,7 +3,7 @@ using moneyManagerBE.Models;
 
 namespace moneyManagerBE.Services.Categories
 {
-    public interface ICategoriesServices
+    public interface ICategoriesService
     {
         DbResponse<Category> AddCategory(Category category);
         DbResponseList<List<Category>> GetAllCategories(int userId, int pageNumber, int pageSize, string search);

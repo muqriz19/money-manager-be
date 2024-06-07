@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using moneyManagerBE.Class;
 using moneyManagerBE.Data;
 using moneyManagerBE.Models;
@@ -105,6 +106,7 @@ namespace moneyManagerBE.Services.Accounts
 
             if (account != null)
             {
+                // remove account
                 _appdbContext.Accounts.Remove(account);
                 _appdbContext.SaveChanges();
 

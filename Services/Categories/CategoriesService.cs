@@ -4,7 +4,7 @@ using moneyManagerBE.Models;
 
 namespace moneyManagerBE.Services.Categories
 {
-    public class CategoriesService : ICategoriesServices
+    public class CategoriesService : ICategoriesService
     {
         private readonly AppDbContext _appDbContext;
         public CategoriesService(AppDbContext appDbContext)

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using moneyManagerBE.Models;
+using Newtonsoft.Json;
 
 namespace moneyManagerBE.Data
 {
@@ -23,20 +24,7 @@ namespace moneyManagerBE.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-        //     builder.Entity<LogDb>()
-        // .ToTable("Logs");
-
             builder.Entity<Log>().Property(log => log.Category).HasColumnType("json");
-
-            // builder.Entity<Record>()
-            // .HasMany(e => e.Logs)
-            // .WithOne(e => e.Record)
-            // .HasForeignKey(e => e.RecordId);
-
-            // builder.Entity<Log>()
-            // .HasOne(e => e.Record)
-            // .WithMany(e => e.Logs)
-            // .HasForeignKey(e => e.RecordId);
 
             base.OnModelCreating(builder);
         }

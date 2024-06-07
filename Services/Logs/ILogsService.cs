@@ -5,17 +5,13 @@ namespace moneyManagerBE.Logs
 {
     public interface ILogsService
     {
-        public DbResponse<Log> AddLog(LogDto log);
+        public DbResponse<LogResponseDto> AddLog(LogDto log);
 
-        public DbResponse<Log> UpdateLog(Log log);
+        public DbResponse<LogResponseDto> UpdateLog(LogDto log);
 
         public bool DoesExist(LogDto log);
         public bool DoesExistId(int logId);
 
-        // public DbResponseList<List<Log>> GetAllLogs(int userId, int pageNumber, int pageSize, string search);
-
-        // public List<Log> GetLogsByRecordID(int recordId);
-
-        public DbResponse<Log> DeleteLogById(int logId);
+        public DbResponse<LogResponseDto> DeleteLogById(int logId);
     }
 }

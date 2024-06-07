@@ -6,7 +6,6 @@
 /home/m/Projects/Workspace/Code/Money Manager/moneyManagerBE/bin/Debug/net8.0/moneyManagerBE.dll
 /home/m/Projects/Workspace/Code/Money Manager/moneyManagerBE/bin/Debug/net8.0/moneyManagerBE.pdb
 /home/m/Projects/Workspace/Code/Money Manager/moneyManagerBE/bin/Debug/net8.0/AutoMapper.dll
-/home/m/Projects/Workspace/Code/Money Manager/moneyManagerBE/bin/Debug/net8.0/AutoMapper.Extensions.Microsoft.DependencyInjection.dll
 /home/m/Projects/Workspace/Code/Money Manager/moneyManagerBE/bin/Debug/net8.0/BCrypt.Net-Next.dll
 /home/m/Projects/Workspace/Code/Money Manager/moneyManagerBE/bin/Debug/net8.0/Humanizer.dll
 /home/m/Projects/Workspace/Code/Money Manager/moneyManagerBE/bin/Debug/net8.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
