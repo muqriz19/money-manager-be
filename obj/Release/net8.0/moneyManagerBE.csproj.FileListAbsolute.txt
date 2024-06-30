@@ -115,3 +115,4 @@
 /home/m/Projects/Workspace/Code/Money Manager/moneyManagerBE/obj/Release/net8.0/moneyManagerBE.pdb
 /home/m/Projects/Workspace/Code/Money Manager/moneyManagerBE/obj/Release/net8.0/moneyManagerBE.genruntimeconfig.cache
 /home/m/Projects/Workspace/Code/Money Manager/moneyManagerBE/obj/Release/net8.0/ref/moneyManagerBE.dll
+/home/m/Projects/Workspace/Code/Money Manager/moneyManagerBE/bin/Release/net8.0/appsettings.Release.json
