@@ -54,16 +54,22 @@ namespace moneyManagerBE.Controllers
 
             if (dbResponse.IsSuccess)
             {
-                dbResponse.Data.Token = _authorizationService.GenerateToken();
-
-                var response = new Response<LoginResponseDto>
+                try
                 {
-                    Status = StatusCodes.Status201Created,
-                    Message = dbResponse.Message,
-                    Data = dbResponse.Data
-                };
+                    dbResponse.Data!.Token = _authorizationService.GenerateToken();
+                    var response = new Response<LoginResponseDto>
+                    {
+                        Status = StatusCodes.Status201Created,
+                        Message = dbResponse.Message,
+                        Data = dbResponse.Data
+                    };
 
-                return Ok(response);
+                    return Ok(response);
+                }
+                catch (NullReferenceException e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+                }
             }
             else
             {
@@ -73,7 +79,7 @@ namespace moneyManagerBE.Controllers
                     Message = dbResponse.Message,
                 };
 
-                return new ObjectResult(response) { StatusCode = 403 };
+                return Unauthorized(response);
             }
         }
 
