@@ -58,7 +58,7 @@ namespace moneyManagerBE.Services.Authorization
 
         public DbResponse<LoginResponseDto> Login(string email, string password)
         {
-            var foundUser = _appDbContext.Users.Where(user => user.Email == email).FirstOrDefault();
+            var foundUser = this.GetUserByEmail(email);
 
             if (foundUser != null)
             {
@@ -79,7 +79,6 @@ namespace moneyManagerBE.Services.Authorization
                         Message = "Invalid login"
                     };
                 }
-
             }
             else
             {
@@ -89,6 +88,11 @@ namespace moneyManagerBE.Services.Authorization
                     Message = "This login does not exist"
                 };
             }
+        }
+
+        public User? GetUserByEmail(string email)
+        {
+            return _appDbContext.Users.Where(theUser => theUser.Email == email).FirstOrDefault();
         }
 
         public bool CheckEmail(string emailAddress)

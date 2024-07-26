@@ -9,6 +9,7 @@ namespace moneyManagerBE.Services.Authorization
         DbResponse<UserDto> AddUser(User user);
         DbResponse<LoginResponseDto> Login(string email, string password);
 
+        User? GetUserByEmail(string email);
 
         bool CheckEmail(string emailAddress);
 
