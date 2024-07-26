@@ -13,10 +13,12 @@ namespace moneyManagerBE.Services.Authorization
 
         bool CheckEmail(string emailAddress);
 
-        DbResponse<bool> ForgotPassword(string email);
+        DbResponse<string> ForgotPasswordOperation(string email);
 
-        DbResponse<bool> ChangePassword(string email, string newPassword);
+        DbResponse<bool> ChangePassword(string email, ResetPassword resetPassword);
 
         string GenerateToken();
+
+        DbResponse<bool> CheckResetPasswordHashIsCorrect(string userEmail, string temporaryHashPassword);
     }
 }

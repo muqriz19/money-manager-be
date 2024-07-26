@@ -56,7 +56,9 @@ namespace moneyManagerBE.Controllers
             {
                 try
                 {
-                    dbResponse.Data!.Token = _authorizationService.GenerateToken();
+                    var token = _authorizationService.GenerateToken();
+                    dbResponse.Data!.Token = token;
+
                     var response = new Response<LoginResponseDto>
                     {
                         Status = StatusCodes.Status201Created,
@@ -68,7 +70,9 @@ namespace moneyManagerBE.Controllers
                 }
                 catch (NullReferenceException e)
                 {
-                    return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+                    // Log the exception if necessary
+                    // _logger.LogError(e, "A null reference occurred while generating the token.");
+                    return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while generating the token.");
                 }
             }
             else
@@ -76,7 +80,7 @@ namespace moneyManagerBE.Controllers
                 var response = new Response<LoginResponseDto>
                 {
                     Status = StatusCodes.Status403Forbidden,
-                    Message = dbResponse.Message,
+                    Message = dbResponse.Message
                 };
 
                 return Unauthorized(response);
@@ -87,61 +91,77 @@ namespace moneyManagerBE.Controllers
         [HttpPost]
         public IActionResult ForgotPassword([FromBody] ForgotPassword forgotPassword)
         {
-            bool userExist = _authorizationService.CheckEmail(forgotPassword.Email);
+            bool doesUserExist = _authorizationService.CheckEmail(forgotPassword.Email);
 
-            if (userExist)
+            if (!doesUserExist)
             {
-                var response = new Response<string[]>
-                {
-                    Status = StatusCodes.Status200OK,
-                    Message = "Initialising...",
-                };
-
-                _authorizationService.ForgotPassword(forgotPassword.Email);
-
-                return Ok(response);
-            }
-            else
-            {
-                var response = new Response<string[]>
+                var userNotFoundResponse = new Response<string[]>
                 {
                     Status = StatusCodes.Status404NotFound,
-                    Message = "User does not exist, are you sure this email is correct?",
+                    Message = "User does not exist, are you sure this email is correct?"
                 };
 
-                return NotFound(response);
+                return NotFound(userNotFoundResponse);
             }
+
+            var operationResponse = _authorizationService.ForgotPasswordOperation(forgotPassword.Email);
+
+            if (!operationResponse.IsSuccess)
+            {
+                var userNotFoundResponse = new Response<string[]>
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Message = "User does not exist, are you sure this email is correct?"
+                };
+
+                return NotFound(userNotFoundResponse);
+            }
+
+            var response = new Response<string>
+            {
+                Status = StatusCodes.Status200OK,
+                Message = "Initialising...",
+                Data = operationResponse.Data
+            };
+
+            return Ok(response);
         }
 
         [Route("ResetPassword")]
         [HttpPost]
         public IActionResult ResetPassword([FromBody] ResetPassword resetPassword)
         {
-            bool got = _authorizationService.CheckEmail(resetPassword.Email);
+            bool doesEmailExist = _authorizationService.CheckEmail(resetPassword.Email);
 
-            if (got)
+            if (!doesEmailExist)
             {
-                var dbResponse = _authorizationService.ChangePassword(resetPassword.Email, resetPassword.newPassword);
-
-                var response = new Response<string[]>
-                {
-                    Status = StatusCodes.Status200OK,
-                    Message = dbResponse.Message,
-                };
-
-                return Ok(response);
-
-            }
-            else
-            {
-                var response = new Response<string[]>
+                return NotFound(new Response<string[]>
                 {
                     Status = StatusCodes.Status404NotFound,
-                    Message = "User does not exist, are you sure this email is correct?",
-                };
-
-                return NotFound(response);
+                    Message = "User does not exist, are you sure this email is correct?"
+                });
             }
+
+            var dbResponseResetPassword = _authorizationService.CheckResetPasswordHashIsCorrect(resetPassword.Email, resetPassword.ResetPasswordTempHash);
+
+            if (!dbResponseResetPassword.IsSuccess)
+            {
+                return BadRequest(new Response<string[]>
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Message = dbResponseResetPassword.Message
+                });
+            }
+
+            var dbResponse = _authorizationService.ChangePassword(resetPassword.Email, resetPassword);
+
+            var response = new Response<string[]>
+            {
+                Status = StatusCodes.Status200OK,
+                Message = dbResponse.Message
+            };
+
+            return Ok(response);
         }
     }
 }

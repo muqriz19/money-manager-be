@@ -58,29 +58,9 @@ namespace moneyManagerBE.Services.Authorization
 
         public DbResponse<LoginResponseDto> Login(string email, string password)
         {
-            var foundUser = this.GetUserByEmail(email);
+            var foundUser = GetUserByEmail(email);
 
-            if (foundUser != null)
-            {
-                if (VerifyHashPassword(password, foundUser.Password))
-                {
-                    return new DbResponse<LoginResponseDto>
-                    {
-                        IsSuccess = true,
-                        Message = "Valid login",
-                        Data = _mapper.Map<LoginResponseDto>(foundUser)
-                    };
-                }
-                else
-                {
-                    return new DbResponse<LoginResponseDto>
-                    {
-                        IsSuccess = false,
-                        Message = "Invalid login"
-                    };
-                }
-            }
-            else
+            if (foundUser == null)
             {
                 return new DbResponse<LoginResponseDto>
                 {
@@ -88,6 +68,24 @@ namespace moneyManagerBE.Services.Authorization
                     Message = "This login does not exist"
                 };
             }
+
+            bool isValidLogin = VerifyHashPassword(password, foundUser.Password);
+
+            if (!isValidLogin)
+            {
+                return new DbResponse<LoginResponseDto>
+                {
+                    IsSuccess = false,
+                    Message = "Invalid login"
+                };
+            }
+
+            return new DbResponse<LoginResponseDto>
+            {
+                IsSuccess = true,
+                Message = "Valid login",
+                Data = _mapper.Map<LoginResponseDto>(foundUser)
+            };
         }
 
         public User? GetUserByEmail(string email)
@@ -107,37 +105,58 @@ namespace moneyManagerBE.Services.Authorization
             return false;
         }
 
-        public DbResponse<bool> ForgotPassword(string email)
+        public DbResponse<string> ForgotPasswordOperation(string email)
         {
-            var foundUser = _appDbContext.Users.Where(user => user.Email == email).FirstOrDefault()!;
+            var foundUser = GetUserByEmail(email);
 
-            foundUser.Password = HashPassword(GenerateRandomResetPassword());
+            if (foundUser == null)
+            {
+                return new DbResponse<string>
+                {
+                    IsSuccess = false,
+                    Message = "User not found"
+                };
+            }
+
+            string resetPassword = HashPassword(GenerateRandomResetPassword());
+            foundUser.Password = resetPassword;
 
             _appDbContext.Users.Update(foundUser);
             _appDbContext.SaveChanges();
 
-            return new DbResponse<bool>
+            return new DbResponse<string>
             {
                 IsSuccess = true,
-                Message = "Password resetted"
+                Message = "Initialising...",
+                Data = resetPassword
             };
         }
 
-        public DbResponse<bool> ChangePassword(string email, string newPassword)
+        public DbResponse<bool> ChangePassword(string email, ResetPassword resetPassword)
         {
-            // reset the password - basically null for the first implementation - later improve
-            var foundUser = _appDbContext.Users.Where(user => user.Email == email).FirstOrDefault()!;
+            var foundUser = GetUserByEmail(email);
 
-            foundUser.Password = HashPassword(newPassword);
-
-            _appDbContext.Users.Update(foundUser);
-            _appDbContext.SaveChanges();
-
-            return new DbResponse<bool>
+            if (foundUser != null)
             {
-                IsSuccess = true,
-                Message = "Password successfully changed"
-            };
+                foundUser.Password = HashPassword(resetPassword.NewPassword);
+
+                _appDbContext.Users.Update(foundUser);
+                _appDbContext.SaveChanges();
+
+                return new DbResponse<bool>
+                {
+                    IsSuccess = true,
+                    Message = "Password successfully changed"
+                };
+            }
+            else
+            {
+                return new DbResponse<bool>
+                {
+                    IsSuccess = false,
+                    Message = "User not found"
+                };
+            }
         }
 
         public string HashPassword(string password)
@@ -176,6 +195,27 @@ namespace moneyManagerBE.Services.Authorization
             string token = new JwtSecurityTokenHandler().WriteToken(Sectoken);
 
             return token;
+        }
+
+        public DbResponse<bool> CheckResetPasswordHashIsCorrect(string userEmail, string temporaryHashPassword)
+        {
+            var foundUser = GetUserByEmail(userEmail);
+
+            if (foundUser == null)
+            {
+                return new DbResponse<bool>
+                {
+                    IsSuccess = false,
+                    Message = "User not found"
+                };
+            }
+
+            bool isHashPasswordCorrect = foundUser.Password == temporaryHashPassword;
+            return new DbResponse<bool>
+            {
+                IsSuccess = isHashPasswordCorrect,
+                Message = isHashPasswordCorrect ? "Hash password same" : "Hash password not the same"
+            };
         }
     }
 }
