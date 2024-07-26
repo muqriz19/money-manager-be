@@ -28,32 +28,30 @@ namespace moneyManagerBE.Services.Authorization
 
         public DbResponse<UserDto> AddUser(User user)
         {
-            bool userExists = CheckEmail(user.Email);
+            bool userExist = CheckEmail(user.Email);
 
-            if (userExists)
+            if (userExist)
             {
                 return new DbResponse<UserDto>
                 {
                     IsSuccess = false,
-                    Message = "This email address has already been registered, try another email"
+                    Message = "This email address has already been registered"
                 };
             }
-            else
+
+            // hash the password
+            string newlyHashedPassword = HashPassword(user.Password);
+            user.Password = newlyHashedPassword;
+
+            _appDbContext.Users.Add(user);
+            _appDbContext.SaveChanges();
+
+            return new DbResponse<UserDto>
             {
-                // hash the password
-                string newlyHashedPassword = HashPassword(user.Password);
-                user.Password = newlyHashedPassword;
-
-                _appDbContext.Users.Add(user);
-                _appDbContext.SaveChanges();
-
-                return new DbResponse<UserDto>
-                {
-                    IsSuccess = true,
-                    Message = "Created user successful",
-                    Data = _mapper.Map<UserDto>(user)
-                };
-            }
+                IsSuccess = true,
+                Message = "Created user successful",
+                Data = _mapper.Map<UserDto>(user)
+            };
         }
 
         public DbResponse<LoginResponseDto> Login(string email, string password)
