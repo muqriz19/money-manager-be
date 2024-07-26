@@ -23,27 +23,23 @@ namespace moneyManagerBE.Controllers
         {
             DbResponse<UserDto> dbResponse = _authorizationService.AddUser(user);
 
-            if (dbResponse.IsSuccess)
+            if (!dbResponse.IsSuccess)
             {
-                var response = new Response<UserDto>
-                {
-                    Status = StatusCodes.Status201Created,
-                    Message = dbResponse.Message,
-                    Data = dbResponse.Data
-                };
-
-                return Ok(response);
-            }
-            else
-            {
-                var response = new Response<UserDto>
+                return Conflict(new Response<UserDto>
                 {
                     Status = StatusCodes.Status409Conflict,
                     Message = dbResponse.Message,
-                };
-
-                return Conflict(response);
+                });
             }
+
+            var response = new Response<UserDto>
+            {
+                Status = StatusCodes.Status201Created,
+                Message = dbResponse.Message,
+                Data = dbResponse.Data
+            };
+
+            return Ok(response);
         }
 
         [Route("Login")]
