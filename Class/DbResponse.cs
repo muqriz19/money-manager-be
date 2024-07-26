@@ -5,7 +5,7 @@ namespace moneyManagerBE.Class
         public bool IsSuccess { get; set; }
         public string Message { get; set; } = string.Empty;
 
-        public T Data { get; set; }
+        public T? Data { get; set; }
     }
 
     public class DbResponseList<T> : DbResponse<T>
