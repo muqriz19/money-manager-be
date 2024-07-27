@@ -57,23 +57,21 @@ namespace moneyManagerBE.Controllers
         {
             var dbResponse = _accountsServices.GetAccountById(userId, accountId);
 
-            if (dbResponse.IsSuccess)
-            {
-                return Ok(new Response<Account>
-                {
-                    Data = dbResponse.Data,
-                    Message = dbResponse.Message,
-                    Status = 200
-                });
-            }
-            else
+            if (!dbResponse.IsSuccess)
             {
                 return NotFound(new Response<Account>
                 {
                     Message = dbResponse.Message,
-                    Status = 404
+                    Status = StatusCodes.Status404NotFound
                 });
             }
+
+            return Ok(new Response<Account>
+            {
+                Data = dbResponse.Data,
+                Message = dbResponse.Message,
+                Status = StatusCodes.Status200OK
+            });
         }
 
         [Authorize]
@@ -82,53 +80,36 @@ namespace moneyManagerBE.Controllers
         {
             var userExistDbResponse = _usersServices.CheckUser(account.UserId);
 
-            if (userExistDbResponse.IsSuccess == false)
+            if (!userExistDbResponse.IsSuccess)
             {
-                var response = new Response<Account>
+                return BadRequest(new Response<Account>
                 {
                     Status = StatusCodes.Status400BadRequest,
                     Message = userExistDbResponse.Message
+                });
+            }
+
+            DbResponse<Account> dbResponse = _accountsServices.AddAccount(account);
+
+            if (!dbResponse.IsSuccess)
+            {
+                var failedResponse = new Response<string[]>
+                {
+                    Status = StatusCodes.Status409Conflict,
+                    Message = dbResponse.Message,
                 };
 
-                return BadRequest(response);
+                return Conflict(failedResponse);
             }
 
-            if (ModelState.IsValid)
+            var response = new Response<Account>
             {
-                DbResponse<Account> dbResponse = _accountsServices.AddAccount(account);
+                Status = StatusCodes.Status201Created,
+                Message = dbResponse.Message,
+                Data = dbResponse.Data
+            };
 
-                if (dbResponse.IsSuccess)
-                {
-                    var response = new Response<Account>
-                    {
-                        Status = StatusCodes.Status201Created,
-                        Message = dbResponse.Message,
-                        Data = dbResponse.Data
-                    };
-
-                    return Ok(response);
-                }
-                else
-                {
-                    var response = new Response<string[]>
-                    {
-                        Status = StatusCodes.Status409Conflict,
-                        Message = dbResponse.Message,
-                    };
-
-                    return Conflict(response);
-                }
-            }
-            else
-            {
-                var response = new Response<string[]>
-                {
-                    Status = StatusCodes.Status400BadRequest,
-                    Message = ModelState.Values.SelectMany(v => v.Errors).ToString()!,
-                };
-
-                return BadRequest(response);
-            }
+            return Ok(response);
         }
 
         [Authorize]
@@ -137,54 +118,36 @@ namespace moneyManagerBE.Controllers
         {
             var userExistDbResponse = _usersServices.CheckUser(account.UserId);
 
-            if (userExistDbResponse.IsSuccess == false)
+            if (!userExistDbResponse.IsSuccess)
             {
-                var response = new Response<Account>
+                var failedResponse = new Response<Account>
                 {
                     Status = StatusCodes.Status400BadRequest,
                     Message = userExistDbResponse.Message
                 };
 
-                return BadRequest(response);
+                return BadRequest(failedResponse);
             }
 
-            if (ModelState.IsValid)
+            if (account.Id == 0)
             {
-                if (account.Id == 0)
-                {
-                    var response = new Response<string[]>
-                    {
-                        Status = StatusCodes.Status400BadRequest,
-                        Message = "This account does not exist, failed to update"
-                    };
-
-                    return BadRequest(response);
-                }
-                else
-                {
-                    DbResponse<Account> dbResponse = _accountsServices.UpdateAccount(account);
-
-                    var response = new Response<Account>
-                    {
-                        Status = StatusCodes.Status200OK,
-                        Message = dbResponse.Message,
-                        Data = dbResponse.Data
-                    };
-
-                    return Ok(response);
-                }
-            }
-            else
-            {
-                var response = new Response<string[]>
+                return BadRequest(new Response<string[]>
                 {
                     Status = StatusCodes.Status400BadRequest,
-                    Message = ModelState.Values.SelectMany(v => v.Errors).ToString()!,
-                    Data = new string[] { }
-                };
-
-                return BadRequest(response);
+                    Message = "This account does not exist, failed to update"
+                });
             }
+
+            DbResponse<Account> dbResponse = _accountsServices.UpdateAccount(account);
+
+            var response = new Response<Account>
+            {
+                Status = StatusCodes.Status200OK,
+                Message = dbResponse.Message,
+                Data = dbResponse.Data
+            };
+
+            return Ok(response);
         }
 
         [Authorize]
@@ -193,28 +156,24 @@ namespace moneyManagerBE.Controllers
         {
             DbResponse<List<string>> dbResponse = _accountsServices.DeleteAccount(id);
 
-            if (dbResponse.IsSuccess)
+            if (!dbResponse.IsSuccess)
             {
-                var response = new Response<string[]>
-                {
-                    Status = StatusCodes.Status200OK,
-                    Message = dbResponse.Message,
-                    Data = new string[] { }
-                };
-
-                return Ok(response);
-            }
-            else
-            {
-                var response = new Response<string[]>
+                var failedResponse = new Response<string[]>
                 {
                     Status = StatusCodes.Status400BadRequest,
                     Message = dbResponse.Message,
-                    Data = new string[] { }
                 };
 
-                return BadRequest(response);
+                return BadRequest(failedResponse);
             }
+
+            var response = new Response<string[]>
+            {
+                Status = StatusCodes.Status200OK,
+                Message = dbResponse.Message,
+            };
+
+            return Ok(response);
 
         }
     }

@@ -118,40 +118,34 @@ namespace moneyManagerBE.Controllers
         {
             var userExistDbResponse = _usersServices.CheckUser(category.UserId);
 
-            if (userExistDbResponse.IsSuccess == false)
+            if (!userExistDbResponse.IsSuccess)
             {
-                var response = new Response<Account>
+                return BadRequest(new Response<Account>
                 {
                     Status = StatusCodes.Status400BadRequest,
                     Message = userExistDbResponse.Message
-                };
-
-                return BadRequest(response);
+                });
             }
 
             if (category.Id == 0)
             {
-                var response = new Response<string[]>
+                return BadRequest(new Response<string[]>
                 {
                     Status = StatusCodes.Status400BadRequest,
                     Message = "This category does not exist, failed to update"
-                };
-
-                return BadRequest(response);
+                });
             }
-            else
+
+            DbResponse<Category> dbResponse = _categoriesServices.UpdateCategory(category);
+
+            var response = new Response<Category>
             {
-                DbResponse<Category> dbResponse = _categoriesServices.UpdateCategory(category);
+                Status = StatusCodes.Status200OK,
+                Message = dbResponse.Message,
+                Data = dbResponse.Data
+            };
 
-                var response = new Response<Category>
-                {
-                    Status = StatusCodes.Status200OK,
-                    Message = dbResponse.Message,
-                    Data = dbResponse.Data
-                };
-
-                return Ok(response);
-            }
+            return Ok(response);
         }
 
         [Authorize]
@@ -160,16 +154,7 @@ namespace moneyManagerBE.Controllers
         {
             var dbResponse = _categoriesServices.GetCategoryById(categoryId);
 
-            if (dbResponse.IsSuccess)
-            {
-                return Ok(new Response<Category>
-                {
-                    Data = dbResponse.Data,
-                    Message = dbResponse.Message,
-                    Status = 200
-                });
-            }
-            else
+            if (!dbResponse.IsSuccess)
             {
                 return NotFound(new Response<Category>
                 {
@@ -177,6 +162,13 @@ namespace moneyManagerBE.Controllers
                     Status = 404
                 });
             }
+
+            return Ok(new Response<Category>
+            {
+                Data = dbResponse.Data,
+                Message = dbResponse.Message,
+                Status = 200
+            });
         }
     }
 }
