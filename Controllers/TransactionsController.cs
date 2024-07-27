@@ -37,7 +37,7 @@ namespace moneyManagerBE.Controllers
 
             bool logExist = _logsService.DoesExistId(transaction.LogId);
 
-            if (logExist == false)
+            if (!logExist)
             {
                 return BadRequest(new Response<Transaction>
                 {

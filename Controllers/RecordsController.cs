@@ -36,12 +36,12 @@ namespace moneyManagerBE.Controllers
             // check user
             var checkUserDbResponse = _usersService.CheckUser(record.UserId);
 
-            if (checkUserDbResponse.IsSuccess == false)
+            if (!checkUserDbResponse.IsSuccess)
             {
                 var response = new Response<Record>
                 {
                     Message = checkUserDbResponse.Message,
-                    Status = 400
+                    Status = StatusCodes.Status400BadRequest
                 };
 
                 return BadRequest(response);
@@ -53,7 +53,7 @@ namespace moneyManagerBE.Controllers
                 var response = new Response<Record>
                 {
                     Message = "Account Id must not be null/zero value",
-                    Status = 400
+                    Status = StatusCodes.Status400BadRequest
                 };
 
                 return BadRequest(response);
@@ -61,28 +61,26 @@ namespace moneyManagerBE.Controllers
 
             var dbResponse = _recordsService.AddRecord(record);
 
-            if (dbResponse.IsSuccess)
+            if (!dbResponse.IsSuccess)
             {
-                var myResponse = new Response<Record>
-                {
-                    Data = dbResponse.Data,
-                    Message = dbResponse.Message,
-                    Status = 200
-                };
 
-                return Ok(myResponse);
-            }
-            else
-            {
                 var badResponse = new Response<Record>
                 {
-                    Status = 403,
+                    Status = StatusCodes.Status400BadRequest,
                     Message = dbResponse.Message
                 };
 
                 return BadRequest(badResponse);
             }
 
+            var myResponse = new Response<Record>
+            {
+                Data = dbResponse.Data,
+                Message = dbResponse.Message,
+                Status = StatusCodes.Status200OK
+            };
+
+            return Ok(myResponse);
         }
 
         [Authorize]
@@ -119,25 +117,23 @@ namespace moneyManagerBE.Controllers
         {
             var dbResponse = _recordsService.GetRecordById(userId, accountId, recordId);
 
-            if (dbResponse.IsSuccess)
-            {
-                var responseData = _mapper.Map<RecordResponseDto>(dbResponse.Data);
-
-                return Ok(new Response<RecordResponseDto>
-                {
-                    Data = responseData,
-                    Message = dbResponse.Message,
-                    Status = 200
-                });
-            }
-            else
+            if (!dbResponse.IsSuccess)
             {
                 return NotFound(new Response<RecordResponseDto>
                 {
                     Message = dbResponse.Message,
-                    Status = 404
+                    Status = StatusCodes.Status404NotFound
                 });
             }
+
+            var responseData = _mapper.Map<RecordResponseDto>(dbResponse.Data);
+
+            return Ok(new Response<RecordResponseDto>
+            {
+                Data = responseData,
+                Message = dbResponse.Message,
+                Status = StatusCodes.Status200OK
+            });
         }
 
         [Authorize]
@@ -146,26 +142,24 @@ namespace moneyManagerBE.Controllers
         {
             var dbResponse = _recordsService.RemoveRecord(id);
 
-            if (dbResponse.IsSuccess)
+            if (!dbResponse.IsSuccess)
             {
-                var response = new Response<List<string>>
+                var failedResponse = new Response<List<string>>
                 {
                     Message = dbResponse.Message,
-                    Status = 200
+                    Status = StatusCodes.Status400BadRequest
                 };
 
-                return Ok(response);
+                return BadRequest(failedResponse);
             }
-            else
+
+            var response = new Response<List<string>>
             {
-                var response = new Response<List<string>>
-                {
-                    Message = dbResponse.Message,
-                    Status = 4001
-                };
+                Message = dbResponse.Message,
+                Status = StatusCodes.Status200OK
+            };
 
-                return BadRequest(response);
-            }
+            return Ok(response);
         }
 
         [Authorize]
@@ -174,40 +168,38 @@ namespace moneyManagerBE.Controllers
         {
             var userExistDbResponse = _usersService.CheckUser(record.UserId);
 
-            if (userExistDbResponse.IsSuccess == false)
+            if (!userExistDbResponse.IsSuccess)
             {
-                var response = new Response<Account>
+                var notExistUserResponse = new Response<Account>
                 {
                     Status = StatusCodes.Status400BadRequest,
                     Message = userExistDbResponse.Message
                 };
 
-                return BadRequest(response);
+                return BadRequest(notExistUserResponse);
             }
 
             if (record.Id == 0)
             {
-                var response = new Response<string[]>
+                var failedResponse = new Response<string[]>
                 {
                     Status = StatusCodes.Status400BadRequest,
                     Message = "This record does not exist, failed to update"
                 };
 
-                return BadRequest(response);
+                return BadRequest(failedResponse);
             }
-            else
+
+            DbResponse<Record> dbResponse = _recordsService.UpdateRecord(record);
+
+            var response = new Response<Record>
             {
-                DbResponse<Record> dbResponse = _recordsService.UpdateRecord(record);
+                Status = StatusCodes.Status200OK,
+                Message = dbResponse.Message,
+                Data = dbResponse.Data
+            };
 
-                var response = new Response<Record>
-                {
-                    Status = StatusCodes.Status200OK,
-                    Message = dbResponse.Message,
-                    Data = dbResponse.Data
-                };
-
-                return Ok(response);
-            }
+            return Ok(response);
         }
     }
 }
