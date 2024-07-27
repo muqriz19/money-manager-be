@@ -7,6 +7,7 @@ using moneyManagerBE.Data;
 using moneyManagerBE.Dtos;
 using moneyManagerBE.Models;
 using moneyManagerBE.Services.PasswordHasher;
+using moneyManagerBE.Services.Users;
 
 namespace moneyManagerBE.Services.Authorization
 {
@@ -19,44 +20,20 @@ namespace moneyManagerBE.Services.Authorization
 
         private readonly IConfiguration _config;
 
-        public AuthorizationService(AppDbContext appDbContext, IMapper mapper, IConfiguration configuration)
+        private readonly IUsersService _usersService;
+
+
+        public AuthorizationService(AppDbContext appDbContext, IMapper mapper, IConfiguration configuration, IUsersService usersService)
         {
             _appDbContext = appDbContext;
             _mapper = mapper;
             _config = configuration;
-        }
-
-        public DbResponse<UserDto> AddUser(User user)
-        {
-            bool userExist = CheckEmail(user.Email);
-
-            if (userExist)
-            {
-                return new DbResponse<UserDto>
-                {
-                    IsSuccess = false,
-                    Message = "This email address has already been registered"
-                };
-            }
-
-            // hash the password
-            string newlyHashedPassword = HashPassword(user.Password);
-            user.Password = newlyHashedPassword;
-
-            _appDbContext.Users.Add(user);
-            _appDbContext.SaveChanges();
-
-            return new DbResponse<UserDto>
-            {
-                IsSuccess = true,
-                Message = "Created user successful",
-                Data = _mapper.Map<UserDto>(user)
-            };
+            _usersService = usersService;
         }
 
         public DbResponse<LoginResponseDto> Login(string email, string password)
         {
-            var foundUser = GetUserByEmail(email);
+            var foundUser = _usersService.GetUserByEmail(email);
 
             if (foundUser == null)
             {
@@ -86,26 +63,9 @@ namespace moneyManagerBE.Services.Authorization
             };
         }
 
-        public User? GetUserByEmail(string email)
-        {
-            return _appDbContext.Users.Where(theUser => theUser.Email == email).FirstOrDefault();
-        }
-
-        public bool CheckEmail(string emailAddress)
-        {
-            var foundUser = _appDbContext.Users.Where(theUser => theUser.Email == emailAddress).FirstOrDefault();
-
-            if (foundUser != null)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
         public DbResponse<string> ForgotPasswordOperation(string email)
         {
-            var foundUser = GetUserByEmail(email);
+            var foundUser = _usersService.GetUserByEmail(email);
 
             if (foundUser == null)
             {
@@ -132,7 +92,7 @@ namespace moneyManagerBE.Services.Authorization
 
         public DbResponse<bool> ChangePassword(string email, ResetPassword resetPassword)
         {
-            var foundUser = GetUserByEmail(email);
+            var foundUser = _usersService.GetUserByEmail(email);
 
             if (foundUser != null)
             {
@@ -197,7 +157,7 @@ namespace moneyManagerBE.Services.Authorization
 
         public DbResponse<bool> CheckResetPasswordHashIsCorrect(string userEmail, string temporaryHashPassword)
         {
-            var foundUser = GetUserByEmail(userEmail);
+            var foundUser = _usersService.GetUserByEmail(userEmail);
 
             if (foundUser == null)
             {

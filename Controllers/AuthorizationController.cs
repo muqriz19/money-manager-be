@@ -3,6 +3,7 @@ using moneyManagerBE.Class;
 using moneyManagerBE.Dtos;
 using moneyManagerBE.Models;
 using moneyManagerBE.Services.Authorization;
+using moneyManagerBE.Services.Users;
 
 namespace moneyManagerBE.Controllers
 {
@@ -11,17 +12,20 @@ namespace moneyManagerBE.Controllers
     public class AuthorizationController : ControllerBase
     {
         private readonly IAuthorization _authorizationService;
+        private readonly IUsersService _usersService;
 
-        public AuthorizationController(IAuthorization authorizationService)
+
+        public AuthorizationController(IAuthorization authorizationService, IUsersService usersService)
         {
             _authorizationService = authorizationService;
+            _usersService = usersService;
         }
 
         [Route("Register")]
         [HttpPost]
         public IActionResult RegisterUser([FromBody] User user)
         {
-            DbResponse<UserDto> dbResponse = _authorizationService.AddUser(user);
+            DbResponse<UserDto> dbResponse = _usersService.AddUser(user);
 
             if (!dbResponse.IsSuccess)
             {
@@ -87,7 +91,7 @@ namespace moneyManagerBE.Controllers
         [HttpPost]
         public IActionResult ForgotPassword([FromBody] ForgotPassword forgotPassword)
         {
-            bool doesUserExist = _authorizationService.CheckEmail(forgotPassword.Email);
+            bool doesUserExist = _usersService.CheckEmail(forgotPassword.Email);
 
             if (!doesUserExist)
             {
@@ -127,7 +131,7 @@ namespace moneyManagerBE.Controllers
         [HttpPost]
         public IActionResult ResetPassword([FromBody] ResetPassword resetPassword)
         {
-            bool doesEmailExist = _authorizationService.CheckEmail(resetPassword.Email);
+            bool doesEmailExist = _usersService.CheckEmail(resetPassword.Email);
 
             if (!doesEmailExist)
             {

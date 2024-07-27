@@ -1,17 +1,25 @@
-using Microsoft.EntityFrameworkCore;
+using AutoMapper;
 using moneyManagerBE.Class;
 using moneyManagerBE.Data;
+using moneyManagerBE.Dtos;
 using moneyManagerBE.Models;
+using moneyManagerBE.Services.Authorization;
 
 namespace moneyManagerBE.Services.Users
 {
     public class UsersService : IUsersService
     {
         private readonly AppDbContext _appDbContext;
-        public UsersService(AppDbContext appDbContext)
+        private readonly IMapper _mapper;
+        private readonly IAuthorization _authorization;
+
+        public UsersService(AppDbContext appDbContext, IMapper mapper, IAuthorization authorization)
         {
             _appDbContext = appDbContext;
+            _mapper = mapper;
+            _authorization = authorization;
         }
+
         public DbResponse<User> CheckUser(int userId)
         {
             if (userId == 0)
@@ -40,6 +48,51 @@ namespace moneyManagerBE.Services.Users
                 Message = $"User {userId} exists",
                 Data = foundUser
             };
+        }
+
+        public DbResponse<UserDto> AddUser(User user)
+        {
+            bool userExist = CheckEmail(user.Email);
+
+            if (userExist)
+            {
+                return new DbResponse<UserDto>
+                {
+                    IsSuccess = false,
+                    Message = "This email address has already been registered"
+                };
+            }
+
+            // hash the password
+            string newlyHashedPassword = _authorization.HashPassword(user.Password);
+            user.Password = newlyHashedPassword;
+
+            _appDbContext.Users.Add(user);
+            _appDbContext.SaveChanges();
+
+            return new DbResponse<UserDto>
+            {
+                IsSuccess = true,
+                Message = "Created user successful",
+                Data = _mapper.Map<UserDto>(user)
+            };
+        }
+
+        public User? GetUserByEmail(string email)
+        {
+            return _appDbContext.Users.Where(theUser => theUser.Email == email).FirstOrDefault();
+        }
+
+        public bool CheckEmail(string emailAddress)
+        {
+            var foundUser = _appDbContext.Users.Where(theUser => theUser.Email == emailAddress).FirstOrDefault();
+
+            if (foundUser != null)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

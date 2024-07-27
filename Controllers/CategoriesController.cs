@@ -31,38 +31,32 @@ namespace moneyManagerBE.Controllers
 
             if (userExistDbResponse.IsSuccess == false)
             {
-                var response = new Response<Account>
+                return BadRequest(new Response<Account>
                 {
                     Status = StatusCodes.Status400BadRequest,
                     Message = userExistDbResponse.Message
-                };
-
-                return BadRequest(response);
+                });
             }
 
             DbResponse<Category> dbResponse = _categoriesServices.AddCategory(category);
 
-            if (dbResponse.IsSuccess)
+            if (!dbResponse.IsSuccess)
             {
-                var response = new Response<Category>
-                {
-                    Status = StatusCodes.Status200OK,
-                    Message = dbResponse.Message,
-                    Data = dbResponse.Data
-                };
-
-                return Ok(response);
-            }
-            else
-            {
-                var response = new Response<string[]>
+                return Conflict(new Response<string[]>
                 {
                     Status = StatusCodes.Status409Conflict,
                     Message = dbResponse.Message,
-                };
-
-                return Conflict(response);
+                });
             }
+
+            var response = new Response<Category>
+            {
+                Status = StatusCodes.Status200OK,
+                Message = dbResponse.Message,
+                Data = dbResponse.Data
+            };
+
+            return Ok(response);
         }
 
         [Authorize]
@@ -99,28 +93,23 @@ namespace moneyManagerBE.Controllers
         {
             DbResponse<List<string>> dbResponse = _categoriesServices.DeleteCategory(id);
 
-            if (dbResponse.IsSuccess)
+            if (!dbResponse.IsSuccess)
             {
-                var response = new Response<string[]>
-                {
-                    Status = StatusCodes.Status200OK,
-                    Message = dbResponse.Message,
-                    Data = new string[] { }
-                };
-
-                return Ok(response);
-            }
-            else
-            {
-                var response = new Response<string[]>
+                return BadRequest(new Response<string[]>
                 {
                     Status = StatusCodes.Status400BadRequest,
                     Message = dbResponse.Message,
                     Data = []
-                };
-
-                return BadRequest(response);
+                });
             }
+
+            var response = new Response<string[]>
+            {
+                Status = StatusCodes.Status200OK,
+                Message = dbResponse.Message
+            };
+
+            return Ok(response);
         }
 
         [Authorize]
