@@ -6,29 +6,38 @@ using moneyManagerBE.Class;
 using moneyManagerBE.Data;
 using moneyManagerBE.Dtos;
 using moneyManagerBE.Models;
-using moneyManagerBE.Services.PasswordHasher;
+using moneyManagerBE.Services.Hasher;
 using moneyManagerBE.Services.Users;
 
 namespace moneyManagerBE.Services.Authorization
 {
-    public class AuthorizationService : IAuthorization, IPasswordHasher
+    public class AuthorizationService : IAuthorization
     {
         private readonly AppDbContext _appDbContext;
         private readonly IMapper _mapper;
 
         private readonly string _randomPasswordText = "RANDOM_RESET_PASSWORD";
 
-        private readonly IConfiguration _config;
-
         private readonly IUsersService _usersService;
 
+        private readonly IHasher _hasher;
 
-        public AuthorizationService(AppDbContext appDbContext, IMapper mapper, IConfiguration configuration, IUsersService usersService)
+        private readonly IConfiguration _config;
+
+
+        public AuthorizationService(
+            AppDbContext appDbContext,
+            IMapper mapper,
+            IUsersService usersService,
+            IHasher hasher,
+            IConfiguration config
+            )
         {
             _appDbContext = appDbContext;
             _mapper = mapper;
-            _config = configuration;
             _usersService = usersService;
+            _hasher = hasher;
+            _config = config;
         }
 
         public DbResponse<LoginResponseDto> Login(string email, string password)
@@ -44,7 +53,7 @@ namespace moneyManagerBE.Services.Authorization
                 };
             }
 
-            bool isValidLogin = VerifyHashPassword(password, foundUser.Password);
+            bool isValidLogin = _hasher.VerifyHashPassword(password, foundUser.Password);
 
             if (!isValidLogin)
             {
@@ -76,7 +85,7 @@ namespace moneyManagerBE.Services.Authorization
                 };
             }
 
-            string resetPassword = HashPassword(GenerateRandomResetPassword());
+            string resetPassword = _hasher.HashPassword(GenerateRandomResetPassword());
             foundUser.Password = resetPassword;
 
             _appDbContext.Users.Update(foundUser);
@@ -96,7 +105,7 @@ namespace moneyManagerBE.Services.Authorization
 
             if (foundUser != null)
             {
-                foundUser.Password = HashPassword(resetPassword.NewPassword);
+                foundUser.Password = _hasher.HashPassword(resetPassword.NewPassword);
 
                 _appDbContext.Users.Update(foundUser);
                 _appDbContext.SaveChanges();
@@ -117,16 +126,25 @@ namespace moneyManagerBE.Services.Authorization
             }
         }
 
-        public string HashPassword(string password)
+        public DbResponse<bool> CheckResetPasswordHashIsCorrect(string userEmail, string temporaryHashPassword)
         {
-            string hashedPassword = BC.EnhancedHashPassword(password, 13);
+            var foundUser = _usersService.GetUserByEmail(userEmail);
 
-            return hashedPassword;
-        }
+            if (foundUser == null)
+            {
+                return new DbResponse<bool>
+                {
+                    IsSuccess = false,
+                    Message = "User not found"
+                };
+            }
 
-        public bool VerifyHashPassword(string actualPassword, string hashedPassword)
-        {
-            return BC.EnhancedVerify(actualPassword, hashedPassword);
+            bool isHashPasswordCorrect = foundUser.Password == temporaryHashPassword;
+            return new DbResponse<bool>
+            {
+                IsSuccess = isHashPasswordCorrect,
+                Message = isHashPasswordCorrect ? "Hash password same" : "Hash password not the same"
+            };
         }
 
         private string GenerateRandomResetPassword()
@@ -153,27 +171,6 @@ namespace moneyManagerBE.Services.Authorization
             string token = new JwtSecurityTokenHandler().WriteToken(Sectoken);
 
             return token;
-        }
-
-        public DbResponse<bool> CheckResetPasswordHashIsCorrect(string userEmail, string temporaryHashPassword)
-        {
-            var foundUser = _usersService.GetUserByEmail(userEmail);
-
-            if (foundUser == null)
-            {
-                return new DbResponse<bool>
-                {
-                    IsSuccess = false,
-                    Message = "User not found"
-                };
-            }
-
-            bool isHashPasswordCorrect = foundUser.Password == temporaryHashPassword;
-            return new DbResponse<bool>
-            {
-                IsSuccess = isHashPasswordCorrect,
-                Message = isHashPasswordCorrect ? "Hash password same" : "Hash password not the same"
-            };
         }
     }
 }

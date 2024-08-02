@@ -3,6 +3,7 @@ using moneyManagerBE.Class;
 using moneyManagerBE.Dtos;
 using moneyManagerBE.Models;
 using moneyManagerBE.Services.Authorization;
+using moneyManagerBE.Services.Hasher;
 using moneyManagerBE.Services.Users;
 
 namespace moneyManagerBE.Controllers
@@ -14,11 +15,17 @@ namespace moneyManagerBE.Controllers
         private readonly IAuthorization _authorizationService;
         private readonly IUsersService _usersService;
 
+        private readonly IHasher _hasher;
 
-        public AuthorizationController(IAuthorization authorizationService, IUsersService usersService)
+        public AuthorizationController(
+            IAuthorization authorizationService,
+            IUsersService usersService,
+            IHasher hasher
+            )
         {
             _authorizationService = authorizationService;
             _usersService = usersService;
+            _hasher = hasher;
         }
 
         [Route("Register")]

@@ -12,10 +12,8 @@ namespace moneyManagerBE.Services.Authorization
 
         DbResponse<bool> ChangePassword(string email, ResetPassword resetPassword);
 
-        string GenerateToken();
-
         DbResponse<bool> CheckResetPasswordHashIsCorrect(string userEmail, string temporaryHashPassword);
 
-        string HashPassword(string password);
+        string GenerateToken();
     }
 }

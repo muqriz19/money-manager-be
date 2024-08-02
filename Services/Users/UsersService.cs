@@ -3,7 +3,7 @@ using moneyManagerBE.Class;
 using moneyManagerBE.Data;
 using moneyManagerBE.Dtos;
 using moneyManagerBE.Models;
-using moneyManagerBE.Services.Authorization;
+using moneyManagerBE.Services.Hasher;
 
 namespace moneyManagerBE.Services.Users
 {
@@ -11,13 +11,45 @@ namespace moneyManagerBE.Services.Users
     {
         private readonly AppDbContext _appDbContext;
         private readonly IMapper _mapper;
-        private readonly IAuthorization _authorization;
+        private readonly IHasher _hasher;
 
-        public UsersService(AppDbContext appDbContext, IMapper mapper, IAuthorization authorization)
+        public UsersService(
+            AppDbContext appDbContext,
+            IMapper mapper,
+            IHasher hasher
+            )
         {
             _appDbContext = appDbContext;
             _mapper = mapper;
-            _authorization = authorization;
+            _hasher = hasher;
+        }
+
+        public DbResponse<UserDto> AddUser(User user)
+        {
+            bool userExist = CheckEmail(user.Email);
+
+            if (userExist)
+            {
+                return new DbResponse<UserDto>
+                {
+                    IsSuccess = false,
+                    Message = "This email address has already been registered"
+                };
+            }
+
+            // hash the password
+            string newlyHashedPassword = _hasher.HashPassword(user.Password);
+            user.Password = newlyHashedPassword;
+
+            _appDbContext.Users.Add(user);
+            _appDbContext.SaveChanges();
+
+            return new DbResponse<UserDto>
+            {
+                IsSuccess = true,
+                Message = "Created user successful",
+                Data = _mapper.Map<UserDto>(user)
+            };
         }
 
         public DbResponse<User> CheckUser(int userId)
@@ -47,34 +79,6 @@ namespace moneyManagerBE.Services.Users
                 IsSuccess = true,
                 Message = $"User {userId} exists",
                 Data = foundUser
-            };
-        }
-
-        public DbResponse<UserDto> AddUser(User user)
-        {
-            bool userExist = CheckEmail(user.Email);
-
-            if (userExist)
-            {
-                return new DbResponse<UserDto>
-                {
-                    IsSuccess = false,
-                    Message = "This email address has already been registered"
-                };
-            }
-
-            // hash the password
-            string newlyHashedPassword = _authorization.HashPassword(user.Password);
-            user.Password = newlyHashedPassword;
-
-            _appDbContext.Users.Add(user);
-            _appDbContext.SaveChanges();
-
-            return new DbResponse<UserDto>
-            {
-                IsSuccess = true,
-                Message = "Created user successful",
-                Data = _mapper.Map<UserDto>(user)
             };
         }
 
