@@ -9,6 +9,7 @@ using moneyManagerBE.Services.Accounts;
 using moneyManagerBE.Services.Authorization;
 using moneyManagerBE.Services.AutoMapper;
 using moneyManagerBE.Services.Categories;
+using moneyManagerBE.Services.Hasher;
 using moneyManagerBE.Services.Logs;
 using moneyManagerBE.Services.Records;
 using moneyManagerBE.Services.Users;
@@ -71,6 +72,8 @@ builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddScoped<IRecordsService, RecordsService>();
 builder.Services.AddScoped<ILogsService, LogsService>();
 builder.Services.AddScoped<ITransactionsService, TransactionsService>();
+builder.Services.AddScoped<IHasher, Hasher>();
+
 
 // add auto mapper
 // but how does it get the AutoMapperProfile.cs to run and map
