@@ -29,7 +29,7 @@ namespace moneyManagerBE.Controllers
         {
             var userExistDbResponse = _usersServices.CheckUser(category.UserId);
 
-            if (userExistDbResponse.IsSuccess == false)
+            if (!userExistDbResponse.IsSuccess)
             {
                 return BadRequest(new Response<Account>
                 {

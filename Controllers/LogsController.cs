@@ -33,7 +33,7 @@ namespace moneyManagerBE.Controllers
         {
             var userExistDbResponse = _usersServices.CheckUser(logDto.UserId);
 
-            if (userExistDbResponse.IsSuccess == false)
+            if (!userExistDbResponse.IsSuccess)
             {
                 var response = new Response<string[]>
                 {
@@ -47,7 +47,7 @@ namespace moneyManagerBE.Controllers
             // check if record exist
             bool recordExist = _recordsService.DoesExist(logDto.RecordId);
 
-            if (recordExist == false)
+            if (!recordExist)
             {
                 var response = new Response<string[]>
                 {
@@ -60,27 +60,25 @@ namespace moneyManagerBE.Controllers
 
             DbResponse<LogResponseDto> dbResponse = _logsService.AddLog(logDto);
 
-            if (dbResponse.IsSuccess)
+            if (!dbResponse.IsSuccess)
             {
-                var newReponse = new Response<LogResponseDto>
-                {
-                    Status = StatusCodes.Status200OK,
-                    Message = dbResponse.Message,
-                    Data = dbResponse.Data
-                };
-
-                return Ok(newReponse);
-            }
-            else
-            {
-                var newReponse = new Response<string[]>
+                var badResponse = new Response<string[]>
                 {
                     Status = StatusCodes.Status400BadRequest,
                     Message = dbResponse.Message,
                 };
 
-                return BadRequest(newReponse);
+                return BadRequest(badResponse);
             }
+
+            var newReponse = new Response<LogResponseDto>
+            {
+                Status = StatusCodes.Status200OK,
+                Message = dbResponse.Message,
+                Data = dbResponse.Data
+            };
+
+            return Ok(newReponse);
         }
 
         [Authorize]
@@ -89,7 +87,7 @@ namespace moneyManagerBE.Controllers
         {
             var userExistDbResponse = _usersServices.CheckUser(log.UserId);
 
-            if (userExistDbResponse.IsSuccess == false)
+            if (!userExistDbResponse.IsSuccess)
             {
                 var response = new Response<Log>
                 {
@@ -103,7 +101,7 @@ namespace moneyManagerBE.Controllers
             // check if record exist
             bool recordExist = _recordsService.DoesExist(log.RecordId);
 
-            if (recordExist == false)
+            if (!recordExist)
             {
                 var response = new Response<Log>
                 {
@@ -116,7 +114,7 @@ namespace moneyManagerBE.Controllers
 
             bool logExist = _logsService.DoesExistId(log.Id);
 
-            if (logExist == false)
+            if (!logExist)
             {
                 var response = new Response<Log>
                 {
@@ -129,57 +127,52 @@ namespace moneyManagerBE.Controllers
 
             DbResponse<LogResponseDto> dbResponse = _logsService.UpdateLog(log);
 
-            if (dbResponse.IsSuccess)
+            if (!dbResponse.IsSuccess)
             {
-                var newReponse = new Response<LogResponseDto>
-                {
-                    Status = StatusCodes.Status200OK,
-                    Message = dbResponse.Message,
-                    Data = dbResponse.Data
-                };
-
-                return Ok(newReponse);
-            }
-            else
-            {
-                var newReponse = new Response<LogResponseDto>
+                var badResponse = new Response<LogResponseDto>
                 {
                     Status = StatusCodes.Status400BadRequest,
                     Message = dbResponse.Message,
                 };
 
-                return BadRequest(newReponse);
+                return BadRequest(badResponse);
             }
+
+            var newReponse = new Response<LogResponseDto>
+            {
+                Status = StatusCodes.Status200OK,
+                Message = dbResponse.Message,
+                Data = dbResponse.Data
+            };
+
+            return Ok(newReponse);
         }
 
         [Authorize]
         [HttpDelete("{logId}")]
         public IActionResult DeleteLogById(int logId)
         {
-            if (_logsService.DoesExistId(logId))
+            if (!_logsService.DoesExistId(logId))
             {
-                var logDeleteDbResponse = _logsService.DeleteLogById(logId);
-
-                var response = new Response<Log>
-                {
-                    Status = StatusCodes.Status200OK,
-                    Message = logDeleteDbResponse.Message
-                };
-
-
-                return Ok(response);
-            }
-            else
-            {
-                var response = new Response<Log>
+                var badResponse = new Response<Log>
                 {
                     Status = StatusCodes.Status400BadRequest,
                     Message = "Log not found"
                 };
 
 
-                return BadRequest(response);
+                return BadRequest(badResponse);
             }
+            var logDeleteDbResponse = _logsService.DeleteLogById(logId);
+
+            var response = new Response<Log>
+            {
+                Status = StatusCodes.Status200OK,
+                Message = logDeleteDbResponse.Message
+            };
+
+
+            return Ok(response);
         }
     }
 }

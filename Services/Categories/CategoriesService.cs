@@ -26,18 +26,16 @@ namespace moneyManagerBE.Services.Categories
                     Message = "Category with the same name already exists, create another unique category"
                 };
             }
-            else
-            {
-                _appDbContext.Categories.Add(category);
-                _appDbContext.SaveChanges();
 
-                return new DbResponse<Category>
-                {
-                    IsSuccess = true,
-                    Message = "Created category successful",
-                    Data = category
-                };
-            }
+            _appDbContext.Categories.Add(category);
+            _appDbContext.SaveChanges();
+
+            return new DbResponse<Category>
+            {
+                IsSuccess = true,
+                Message = "Created category successful",
+                Data = category
+            };
         }
 
         public DbResponseList<List<Category>> GetAllCategories(int userId, int pageNumber, int pageSize, string search)
@@ -88,18 +86,7 @@ namespace moneyManagerBE.Services.Categories
         {
             var category = _appDbContext.Categories.FirstOrDefault(category => category.Id == id);
 
-            if (category != null)
-            {
-                _appDbContext.Categories.Remove(category);
-                _appDbContext.SaveChanges();
-
-                return new DbResponse<List<string>>()
-                {
-                    IsSuccess = true,
-                    Message = "Deleted category of " + id
-                };
-            }
-            else
+            if (category == null)
             {
                 return new DbResponse<List<string>>()
                 {
@@ -107,6 +94,15 @@ namespace moneyManagerBE.Services.Categories
                     Message = $"Category of {id} does not exist"
                 };
             }
+
+            _appDbContext.Categories.Remove(category);
+            _appDbContext.SaveChanges();
+
+            return new DbResponse<List<string>>()
+            {
+                IsSuccess = true,
+                Message = "Deleted category of " + id
+            };
         }
 
         public DbResponse<Category> UpdateCategory(Category category)
@@ -126,16 +122,7 @@ namespace moneyManagerBE.Services.Categories
         {
             var foundData = _appDbContext.Categories.FirstOrDefault(data => data.Id == categoryId);
 
-            if (foundData != null)
-            {
-                return new DbResponse<Category>
-                {
-                    IsSuccess = true,
-                    Message = $"Category found",
-                    Data = foundData
-                };
-            }
-            else
+            if (foundData == null)
             {
                 return new DbResponse<Category>
                 {
@@ -143,6 +130,13 @@ namespace moneyManagerBE.Services.Categories
                     Message = $"Category of {categoryId} does not exist"
                 };
             }
+
+            return new DbResponse<Category>
+            {
+                IsSuccess = true,
+                Message = $"Category found",
+                Data = foundData
+            };
         }
     }
 }
